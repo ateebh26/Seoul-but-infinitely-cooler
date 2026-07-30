@@ -1,0 +1,356 @@
+<section
+  class="scent-navigation"
+  style="
+    --section-background: {{ section.settings.background_color }};
+    --section-text: {{ section.settings.text_color }};
+  "
+>
+  <div class="scent-navigation__inner">
+    <div class="seoul-section-heading">
+      <div>
+        {% if section.settings.eyebrow != blank %}
+          <span class="seoul-section-heading__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2>{{ section.settings.heading }}</h2>
+        {% endif %}
+      </div>
+
+      {% if section.settings.link_label != blank %}
+        <a
+          class="seoul-section-heading__link"
+          {% if section.settings.link != blank %}
+            href="{{ section.settings.link }}"
+          {% else %}
+            role="link" aria-disabled="true"
+          {% endif %}
+        >
+          {{ section.settings.link_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="scent-navigation__scroller">
+      {% for block in section.blocks %}
+        <a
+          class="scent-navigation__item"
+          {% if block.settings.link != blank %}
+            href="{{ block.settings.link }}"
+          {% else %}
+            role="link" aria-disabled="true"
+          {% endif %}
+          {{ block.shopify_attributes }}
+        >
+          <span
+            class="scent-navigation__image-wrap"
+            style="--scent-color: {{ block.settings.color }};"
+          >
+            {% if block.settings.image != blank %}
+              {{
+                block.settings.image
+                | image_url: width: 600
+                | image_tag:
+                  widths: '180, 280, 420, 600',
+                  sizes: '(max-width: 749px) 34vw, 150px',
+                  loading: 'lazy',
+                  class: 'scent-navigation__image'
+              }}
+            {% else %}
+              <span class="scent-navigation__placeholder" aria-hidden="true">
+                <span>{{ block.settings.label | slice: 0 }}</span>
+              </span>
+            {% endif %}
+          </span>
+          <span class="scent-navigation__label">{{ block.settings.label | escape }}</span>
+          {% if block.settings.note != blank %}
+            <span class="scent-navigation__note">{{ block.settings.note | escape }}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .scent-navigation {
+    background: var(--section-background);
+    color: var(--section-text);
+    padding-block: clamp(3.5rem, 7vw, 7rem);
+  }
+
+  .scent-navigation__inner {
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+  }
+
+  .scent-navigation__scroller {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(118px, 1fr);
+    gap: clamp(0.8rem, 2vw, 1.75rem);
+    padding: 0.25rem 0 0.8rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    scroll-snap-type: inline mandatory;
+  }
+
+  .scent-navigation__scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scent-navigation__item {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    color: inherit;
+    text-align: center;
+    text-decoration: none;
+    scroll-snap-align: start;
+  }
+
+  .scent-navigation__image-wrap {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--scent-color);
+  }
+
+  .scent-navigation__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .scent-navigation__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 68% 25%, rgb(255 255 255 / 70%) 0 8%, transparent 9%),
+      radial-gradient(circle at 35% 70%, rgb(255 255 255 / 38%) 0 16%, transparent 17%),
+      linear-gradient(145deg, var(--scent-color), color-mix(in srgb, var(--scent-color), #fff 42%));
+  }
+
+  .scent-navigation__placeholder::before,
+  .scent-navigation__placeholder::after {
+    content: '';
+    position: absolute;
+    width: 32%;
+    aspect-ratio: 0.68;
+    border: 1px solid rgb(36 32 31 / 32%);
+    border-radius: 45% 45% 50% 50%;
+    transform: rotate(28deg);
+  }
+
+  .scent-navigation__placeholder::after {
+    width: 22%;
+    transform: translate(28%, -8%) rotate(-25deg);
+  }
+
+  .scent-navigation__placeholder span {
+    position: relative;
+    z-index: 1;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-style: italic;
+    opacity: 0.68;
+  }
+
+  .scent-navigation__label {
+    margin-top: 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .scent-navigation__note {
+    margin-top: 0.18rem;
+    font-size: 0.64rem;
+    opacity: 0.58;
+  }
+
+  @media (hover: hover) {
+    .scent-navigation__item:hover .scent-navigation__image,
+    .scent-navigation__item:hover .scent-navigation__placeholder {
+      transform: scale(1.045);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .scent-navigation__scroller {
+      grid-auto-columns: minmax(132px, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .scent-navigation {
+      padding-block: 3.25rem;
+    }
+
+    .scent-navigation__inner {
+      width: 100%;
+    }
+
+    .scent-navigation .seoul-section-heading {
+      padding-inline: 1rem;
+    }
+
+    .scent-navigation__scroller {
+      grid-auto-columns: 35vw;
+      padding-inline: 1rem;
+      scroll-padding-inline: 1rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Shop by scent",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Follow your nose"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by scent family"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "View every fragrance"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffdf9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#24201f"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "scent",
+      "name": "Scent family",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Name",
+          "default": "Floral"
+        },
+        {
+          "type": "text",
+          "id": "note",
+          "label": "Short note",
+          "default": "Soft & romantic"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "label": "Placeholder colour",
+          "default": "#f5d9dd"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by scent",
+      "category": "Products",
+      "blocks": [
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Floral",
+            "note": "Soft & romantic",
+            "color": "#f5d9dd"
+          }
+        },
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Fresh",
+            "note": "Bright & airy",
+            "color": "#d8ebf1"
+          }
+        },
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Fruity",
+            "note": "Juicy & playful",
+            "color": "#f3c5ac"
+          }
+        },
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Woody",
+            "note": "Warm & grounded",
+            "color": "#d8c9ad"
+          }
+        },
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Amber",
+            "note": "Rich & glowing",
+            "color": "#e7c07e"
+          }
+        },
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Gourmand",
+            "note": "Sweet & cozy",
+            "color": "#ddd5f3"
+          }
+        },
+        {
+          "type": "scent",
+          "settings": {
+            "label": "Musk",
+            "note": "Clean & intimate",
+            "color": "#dbe9d3"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

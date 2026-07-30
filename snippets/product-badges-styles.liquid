@@ -28,6 +28,12 @@
     right: calc(var(--badge-inset) + var(--padding-inline-start));
   }
 
+  .product-badges--inline {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
   .product-badges__badge {
     --badge-font-size: var(--font-size--xs);
 
@@ -42,6 +48,11 @@
     font-weight: var(--badge-font-weight);
     text-transform: var(--badge-text-transform);
     border-radius: var(--badge-border-radius);
+  }
+
+  .product-badges__badge--custom {
+    background: var(--color-background);
+    color: var(--color-foreground);
   }
 
   .product-badges__badge--rectangle {

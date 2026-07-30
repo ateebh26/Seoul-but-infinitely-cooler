@@ -1238,6 +1238,36 @@
       },
       {
         "type": "header",
+        "content": "Custom product badges"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_product_badges",
+        "label": "Show custom product badges",
+        "default": true,
+        "info": "Set custom.badge on a product, or add a tag such as badge:New."
+      },
+      {
+        "type": "text",
+        "id": "custom_badge_tag_prefix",
+        "label": "Product tag prefix",
+        "default": "badge:",
+        "info": "The text after this prefix becomes the badge label."
+      },
+      {
+        "type": "color",
+        "id": "badge_custom_background_color",
+        "label": "Custom badge background",
+        "default": "#f4e88f"
+      },
+      {
+        "type": "color",
+        "id": "badge_custom_text_color",
+        "label": "Custom badge text",
+        "default": "#24201f"
+      },
+      {
+        "type": "header",
         "content": "t:names.typography"
       },
       {

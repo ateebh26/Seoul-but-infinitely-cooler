@@ -1,0 +1,509 @@
+<section
+  class="editorial-perfume-grid"
+  style="
+    --section-background: {{ section.settings.background_color }};
+    --section-text: {{ section.settings.text_color }};
+  "
+>
+  <div class="editorial-perfume-grid__inner">
+    <div class="seoul-section-heading">
+      <div>
+        {% if section.settings.eyebrow != blank %}
+          <span class="seoul-section-heading__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2>{{ section.settings.heading }}</h2>
+        {% endif %}
+      </div>
+      {% if section.settings.link_label != blank %}
+        <a
+          class="seoul-section-heading__link"
+          {% if section.settings.link != blank %}
+            href="{{ section.settings.link }}"
+          {% else %}
+            role="link" aria-disabled="true"
+          {% endif %}
+        >
+          {{ section.settings.link_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="editorial-perfume-grid__grid">
+      {% for block in section.blocks %}
+        {% liquid
+          assign card_class = 'editorial-perfume-card--small'
+          if forloop.index == 1
+            assign card_class = 'editorial-perfume-card--large'
+          elsif forloop.index == 2
+            assign card_class = 'editorial-perfume-card--wide'
+          endif
+        %}
+
+        <article
+          class="editorial-perfume-card {{ card_class }} editorial-perfume-card--{{ block.settings.text_position }}"
+          style="
+            --card-background: {{ block.settings.background_color }};
+            --card-text: {{ block.settings.text_color }};
+            --card-overlay: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+          "
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.image != blank %}
+            {{
+              block.settings.image
+              | image_url: width: 1800
+              | image_tag:
+                widths: '500, 750, 1100, 1500, 1800',
+                sizes: '(max-width: 749px) calc(100vw - 32px), 50vw',
+                loading: 'lazy',
+                class: 'editorial-perfume-card__image'
+            }}
+          {% else %}
+            <div class="editorial-perfume-card__placeholder" aria-hidden="true">
+              <span class="editorial-perfume-card__shape editorial-perfume-card__shape--one"></span>
+              <span class="editorial-perfume-card__shape editorial-perfume-card__shape--two"></span>
+              <span class="editorial-perfume-card__mini-bottle"></span>
+            </div>
+          {% endif %}
+
+          <div class="editorial-perfume-card__veil"></div>
+
+          <div class="editorial-perfume-card__content">
+            {% if block.settings.eyebrow != blank %}
+              <span class="editorial-perfume-card__eyebrow">{{ block.settings.eyebrow | escape }}</span>
+            {% endif %}
+            {% if block.settings.heading != blank %}
+              <h3>{{ block.settings.heading }}</h3>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <div class="editorial-perfume-card__text rte">{{ block.settings.text }}</div>
+            {% endif %}
+            {% if block.settings.button_label != blank %}
+              <a
+                class="editorial-perfume-card__link"
+                {% if block.settings.link != blank %}
+                  href="{{ block.settings.link }}"
+                {% else %}
+                  role="link" aria-disabled="true"
+                {% endif %}
+              >
+                {{ block.settings.button_label | escape }}
+                <span aria-hidden="true">↗</span>
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .editorial-perfume-grid {
+    padding-block: clamp(3.5rem, 7vw, 7rem);
+    background: var(--section-background);
+    color: var(--section-text);
+  }
+
+  .editorial-perfume-grid__inner {
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+  }
+
+  .editorial-perfume-grid__grid {
+    display: grid;
+    min-height: 760px;
+    grid-template-columns: minmax(0, 1.04fr) repeat(2, minmax(0, 0.5fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .editorial-perfume-card {
+    position: relative;
+    isolation: isolate;
+    min-height: 300px;
+    overflow: hidden;
+    border-radius: var(--seoul-radius-md);
+    background: var(--card-background);
+    color: var(--card-text);
+  }
+
+  .editorial-perfume-card--large {
+    grid-row: 1 / 3;
+  }
+
+  .editorial-perfume-card--wide {
+    grid-column: 2 / 4;
+  }
+
+  .editorial-perfume-card__image,
+  .editorial-perfume-card__placeholder,
+  .editorial-perfume-card__veil {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .editorial-perfume-card__image {
+    object-fit: cover;
+    transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .editorial-perfume-card__veil {
+    z-index: 1;
+    background: linear-gradient(0deg, rgb(20 16 15 / var(--card-overlay)), transparent 70%);
+  }
+
+  .editorial-perfume-card--top .editorial-perfume-card__veil {
+    background: linear-gradient(180deg, rgb(20 16 15 / var(--card-overlay)), transparent 72%);
+  }
+
+  .editorial-perfume-card__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: 100%;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .editorial-perfume-card--top .editorial-perfume-card__content {
+    justify-content: flex-start;
+  }
+
+  .editorial-perfume-card__eyebrow {
+    margin-bottom: 0.5rem;
+    font-size: 0.62rem;
+    font-weight: 750;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .editorial-perfume-card h3 {
+    max-width: 13ch;
+    margin: 0;
+    color: inherit;
+    font-size: clamp(1.7rem, 3.6vw, 4.25rem);
+    line-height: 0.98;
+  }
+
+  .editorial-perfume-card--small h3 {
+    font-size: clamp(1.4rem, 2.2vw, 2.4rem);
+  }
+
+  .editorial-perfume-card__text {
+    max-width: 35rem;
+    margin-top: 0.65rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .editorial-perfume-card__link {
+    display: inline-flex;
+    min-height: 40px;
+    margin-top: 1rem;
+    padding-inline: 1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    align-items: center;
+    gap: 1.25rem;
+    color: inherit;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      background 180ms ease,
+      color 180ms ease;
+  }
+
+  .editorial-perfume-card__link:hover {
+    background: var(--card-text);
+    color: var(--card-background);
+  }
+
+  .editorial-perfume-card__placeholder {
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 74% 22%, rgb(255 255 255 / 55%) 0 8%, transparent 8.5%),
+      linear-gradient(135deg, var(--card-background), color-mix(in srgb, var(--card-background), #ffffff 35%));
+  }
+
+  .editorial-perfume-card__shape {
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 28%);
+  }
+
+  .editorial-perfume-card__shape--one {
+    top: -15%;
+    right: -12%;
+    width: 62%;
+    aspect-ratio: 1;
+  }
+
+  .editorial-perfume-card__shape--two {
+    right: 18%;
+    bottom: -20%;
+    width: 38%;
+    aspect-ratio: 1;
+    box-shadow: inset -12px -16px 20px rgb(255 255 255 / 18%);
+  }
+
+  .editorial-perfume-card__mini-bottle {
+    position: absolute;
+    top: 22%;
+    right: 13%;
+    width: min(30%, 180px);
+    aspect-ratio: 0.82;
+    border: 1px solid rgb(36 32 31 / 27%);
+    border-radius: 28% 28% 18% 18%;
+    background: linear-gradient(145deg, rgb(255 255 255 / 62%), rgb(255 255 255 / 12%));
+    box-shadow: 0 24px 50px rgb(62 42 39 / 13%);
+    transform: rotate(7deg);
+  }
+
+  .editorial-perfume-card__mini-bottle::before {
+    content: '';
+    position: absolute;
+    top: -17%;
+    left: 31%;
+    width: 38%;
+    height: 20%;
+    border-radius: 8px 8px 2px 2px;
+    background: var(--seoul-ink);
+  }
+
+  @media (hover: hover) {
+    .editorial-perfume-card:hover .editorial-perfume-card__image {
+      transform: scale(1.035);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .editorial-perfume-grid__grid {
+      min-height: 0;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+    }
+
+    .editorial-perfume-card--large {
+      min-height: 520px;
+      grid-column: 1 / 3;
+      grid-row: auto;
+    }
+
+    .editorial-perfume-card--wide {
+      min-height: 330px;
+      grid-column: 1 / 3;
+    }
+
+    .editorial-perfume-card--small {
+      min-height: 310px;
+    }
+
+    .editorial-perfume-card--small .editorial-perfume-card__text {
+      display: none;
+    }
+
+    .editorial-perfume-card--small .editorial-perfume-card__content {
+      padding: 1rem;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .editorial-perfume-card--small {
+      grid-column: 1 / 3;
+      min-height: 290px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Editorial perfume grid",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The fragrance wardrobe"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "More ways to smell wonderful"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Our story"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffdf9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#24201f"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "story",
+      "name": "Story card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "The edit"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Your everyday signature"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Polished, memorable, and easy to wear from first spray to last light.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop the edit"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "text_position",
+          "label": "Text position",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "bottom",
+              "label": "Bottom"
+            }
+          ],
+          "default": "bottom"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Image overlay",
+          "min": 0,
+          "max": 80,
+          "step": 5,
+          "unit": "%",
+          "default": 25
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background / placeholder",
+          "default": "#d8ebf1"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text",
+          "default": "#fffdf9"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial perfume grid",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Find your ritual",
+            "heading": "A scent for every mood",
+            "text": "<p>Fresh for morning, luminous for afternoon, unforgettable after dark.</p>",
+            "button_label": "Shop by mood",
+            "background_color": "#86cddd",
+            "text_color": "#fffdf9",
+            "overlay_opacity": 20
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Layer it your way",
+            "heading": "Made to mingle",
+            "text": "<p>Pair skin scents, florals, and woods to make the fragrance unmistakably yours.</p>",
+            "button_label": "Layering guide",
+            "background_color": "#f1e7dc",
+            "text_color": "#24201f",
+            "text_position": "bottom",
+            "overlay_opacity": 10
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Try before the full bottle",
+            "heading": "Discovery sets",
+            "text": "<p>Meet a few favourites first.</p>",
+            "button_label": "Explore sets",
+            "background_color": "#ddd5f3",
+            "text_color": "#24201f",
+            "text_position": "bottom",
+            "overlay_opacity": 10
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "eyebrow": "A beautiful little gesture",
+            "heading": "Gifts that linger",
+            "text": "<p>Thoughtfully wrapped and ready to delight.</p>",
+            "button_label": "Shop gifts",
+            "background_color": "#f5d9dd",
+            "text_color": "#24201f",
+            "text_position": "bottom",
+            "overlay_opacity": 10
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

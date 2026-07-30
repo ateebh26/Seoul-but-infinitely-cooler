@@ -6,92 +6,104 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
-    "hero_jVaWmY": {
-      "type": "hero",
+    "seoul_hero": {
+      "type": "seoul-perfume-hero",
+      "settings": {
+        "image_position": "left",
+        "eyebrow": "A scent for every version of you",
+        "heading": "Find your <em>signature</em> scent.",
+        "text": "<p>Original fragrances, thoughtful edits, and little luxuries worth lingering over.</p>",
+        "button_label": "Explore fragrances",
+        "button_link": "shopify://collections/all",
+        "side_note": "Complimentary samples",
+        "height": 720,
+        "background_color": "#efb9c2",
+        "text_color": "#fffdf9",
+        "accent_color": "#f4e88f"
+      }
+    },
+    "scent_navigation": {
+      "type": "scent-navigation",
       "blocks": {
-        "text_YLPk4p": {
-          "type": "text",
-          "name": "t:names.heading",
+        "scent_floral": {
+          "type": "scent",
           "settings": {
-            "text": "<p>Browse our latest products</p>",
-            "text_color": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "label": "Floral",
+            "note": "Soft & romantic",
+            "color": "#f5d9dd"
+          }
         },
-        "button_H9gpTf": {
-          "type": "button",
-          "name": "t:names.button",
+        "scent_fresh": {
+          "type": "scent",
           "settings": {
-            "label": "Shop all",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "button-custom",
-            "custom_button_background": "rgba(0,0,0,0)",
-            "custom_button_text": "{{ settings.color_palette.background }}",
-            "custom_button_border": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+            "label": "Fresh",
+            "note": "Bright & airy",
+            "color": "#d8ebf1"
+          }
+        },
+        "scent_fruity": {
+          "type": "scent",
+          "settings": {
+            "label": "Fruity",
+            "note": "Juicy & playful",
+            "color": "#f3c5ac"
+          }
+        },
+        "scent_woody": {
+          "type": "scent",
+          "settings": {
+            "label": "Woody",
+            "note": "Warm & grounded",
+            "color": "#d8c9ad"
+          }
+        },
+        "scent_amber": {
+          "type": "scent",
+          "settings": {
+            "label": "Amber",
+            "note": "Rich & glowing",
+            "color": "#e7c07e"
+          }
+        },
+        "scent_gourmand": {
+          "type": "scent",
+          "settings": {
+            "label": "Gourmand",
+            "note": "Sweet & cozy",
+            "color": "#ddd5f3"
+          }
+        },
+        "scent_musk": {
+          "type": "scent",
+          "settings": {
+            "label": "Musk",
+            "note": "Clean & intimate",
+            "color": "#dbe9d3"
+          }
         }
       },
       "block_order": [
-        "text_YLPk4p",
-        "button_H9gpTf"
+        "scent_floral",
+        "scent_fresh",
+        "scent_fruity",
+        "scent_woody",
+        "scent_amber",
+        "scent_gourmand",
+        "scent_musk"
       ],
-      "name": "t:names.hero",
       "settings": {
-        "media_type_1": "image",
-        "media_type_2": "image",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": false,
-        "media_type_1_mobile": "image",
-        "media_type_2_mobile": "image",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "space-between",
-        "vertical_alignment": "flex-end",
-        "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 24,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "background_color": "rgba(0,0,0,0)",
-        "toggle_overlay": true,
-        "overlay_color": "#12121266",
-        "overlay_style": "solid",
-        "gradient_direction": "to bottom",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 100,
-        "padding-block-end": 72
+        "eyebrow": "Follow your nose",
+        "heading": "Shop by scent family",
+        "link_label": "View every fragrance",
+        "link": "shopify://collections/all",
+        "background_color": "#fffdf9",
+        "text_color": "#24201f"
       }
     },
-    "product_list_fa6P9H": {
+    "featured_fragrances": {
       "type": "product-list",
       "blocks": {
         "static-header": {
@@ -126,18 +138,18 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "product_list_text_YFtzcL": {
+            "featured_heading": {
               "type": "_product-list-text",
               "name": "t:names.collection_title",
               "settings": {
-                "text": "<h3>{{ closest.collection.title }}</h3>",
+                "text": "<h3>The perfume counter</h3>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "line_height": "normal",
-                "letter_spacing": "normal",
+                "type_preset": "h2",
+                "font": "var(--font-heading--family)",
+                "line_height": "tight",
+                "letter_spacing": "tight",
                 "case": "none",
                 "wrap": "pretty",
                 "background": false,
@@ -150,11 +162,11 @@
               },
               "blocks": {}
             },
-            "product_list_button_MWeP9V": {
+            "featured_button": {
               "type": "_product-list-button",
               "name": "t:names.product_list_button",
               "settings": {
-                "label": "View all",
+                "label": "Shop all fragrances",
                 "open_in_new_tab": false,
                 "style_class": "link",
                 "width": "fit-content",
@@ -166,8 +178,8 @@
             }
           },
           "block_order": [
-            "product_list_text_YFtzcL",
-            "product_list_button_MWeP9V"
+            "featured_heading",
+            "featured_button"
           ]
         },
         "static-product-card": {
@@ -175,7 +187,7 @@
           "name": "t:names.product_card",
           "static": true,
           "settings": {
-            "product_card_gap": 4,
+            "product_card_gap": 8,
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
@@ -186,15 +198,15 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "product_card_gallery_677WP3": {
+            "featured_gallery": {
               "type": "_product-card-gallery",
               "name": "t:names.product_card_media",
               "settings": {
-                "image_ratio": "adapt",
+                "image_ratio": "portrait",
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
-                "border_radius": 0,
+                "border_radius": 22,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -202,7 +214,7 @@
               },
               "blocks": {}
             },
-            "product_title_YXxMTj": {
+            "featured_title": {
               "type": "product-title",
               "name": "t:names.product_title",
               "settings": {
@@ -211,7 +223,7 @@
                 "alignment": "left",
                 "type_preset": "rte",
                 "font": "var(--font-body--family)",
-                "font_size": "1rem",
+                "font_size": "0.875rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -219,14 +231,14 @@
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
-                "padding-block-start": 4,
+                "padding-block-start": 8,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
               "blocks": {}
             },
-            "price_JQzVV4": {
+            "featured_price": {
               "type": "price",
               "name": "t:names.product_price",
               "settings": {
@@ -237,7 +249,7 @@
                 "width": "100%",
                 "alignment": "left",
                 "font": "var(--font-body--family)",
-                "font_size": "1rem",
+                "font_size": "0.75rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
@@ -250,36 +262,157 @@
             }
           },
           "block_order": [
-            "product_card_gallery_677WP3",
-            "product_title_YXxMTj",
-            "price_JQzVV4"
+            "featured_gallery",
+            "featured_title",
+            "featured_price"
           ]
         }
       },
-      "name": "t:names.product_list",
+      "name": "Featured fragrances",
       "settings": {
         "collection": "all",
         "layout_type": "grid",
-        "carousel_on_mobile": false,
+        "carousel_on_mobile": true,
         "max_products": 8,
         "columns": 4,
         "mobile_columns": "2",
         "mobile_card_size": "60cqw",
-        "columns_gap": 8,
-        "rows_gap": 24,
+        "columns_gap": 14,
+        "rows_gap": 32,
         "icons_style": "arrow",
-        "icons_shape": "none",
+        "icons_shape": "circle",
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
-        "gap": 28,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "gap": 36,
+        "background_color": "#fffdf9",
+        "padding-block-start": 72,
+        "padding-block-end": 72
+      }
+    },
+    "editorial_grid": {
+      "type": "editorial-perfume-grid",
+      "blocks": {
+        "story_mood": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Find your ritual",
+            "heading": "A scent for every mood",
+            "text": "<p>Fresh for morning, luminous for afternoon, unforgettable after dark.</p>",
+            "button_label": "Shop by mood",
+            "text_position": "bottom",
+            "overlay_opacity": 20,
+            "background_color": "#86cddd",
+            "text_color": "#fffdf9"
+          }
+        },
+        "story_layer": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Layer it your way",
+            "heading": "Made to mingle",
+            "text": "<p>Pair skin scents, florals, and woods to make the fragrance unmistakably yours.</p>",
+            "button_label": "Layering guide",
+            "text_position": "bottom",
+            "overlay_opacity": 10,
+            "background_color": "#f1e7dc",
+            "text_color": "#24201f"
+          }
+        },
+        "story_discovery": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Try before the full bottle",
+            "heading": "Discovery sets",
+            "text": "<p>Meet a few favourites first.</p>",
+            "button_label": "Explore sets",
+            "text_position": "bottom",
+            "overlay_opacity": 10,
+            "background_color": "#ddd5f3",
+            "text_color": "#24201f"
+          }
+        },
+        "story_gifts": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "A beautiful little gesture",
+            "heading": "Gifts that linger",
+            "text": "<p>Thoughtfully wrapped and ready to delight.</p>",
+            "button_label": "Shop gifts",
+            "text_position": "bottom",
+            "overlay_opacity": 10,
+            "background_color": "#f5d9dd",
+            "text_color": "#24201f"
+          }
+        }
+      },
+      "block_order": [
+        "story_mood",
+        "story_layer",
+        "story_discovery",
+        "story_gifts"
+      ],
+      "settings": {
+        "eyebrow": "The fragrance wardrobe",
+        "heading": "More ways to smell wonderful",
+        "link_label": "Our story",
+        "background_color": "#fffdf9",
+        "text_color": "#24201f"
+      }
+    },
+    "store_promises": {
+      "type": "perfume-service-strip",
+      "blocks": {
+        "promise_samples": {
+          "type": "promise",
+          "settings": {
+            "icon": "sparkle",
+            "heading": "Complimentary samples",
+            "text": "A little something extra with every order."
+          }
+        },
+        "promise_gift": {
+          "type": "promise",
+          "settings": {
+            "icon": "ribbon",
+            "heading": "Beautifully giftable",
+            "text": "Thoughtful wrapping, ready for the occasion."
+          }
+        },
+        "promise_delivery": {
+          "type": "promise",
+          "settings": {
+            "icon": "truck",
+            "heading": "Free delivery over $100",
+            "text": "Fast, tracked shipping across Canada."
+          }
+        },
+        "promise_authentic": {
+          "type": "promise",
+          "settings": {
+            "icon": "shield",
+            "heading": "Always authentic",
+            "text": "Only genuine fragrance, sourced with care."
+          }
+        }
+      },
+      "block_order": [
+        "promise_samples",
+        "promise_gift",
+        "promise_delivery",
+        "promise_authentic"
+      ],
+      "settings": {
+        "background_color": "#f4e88f",
+        "text_color": "#24201f",
+        "border_color": "#c9be68"
       }
     }
   },
   "order": [
-    "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "seoul_hero",
+    "scent_navigation",
+    "featured_fragrances",
+    "editorial_grid",
+    "store_promises"
   ]
 }

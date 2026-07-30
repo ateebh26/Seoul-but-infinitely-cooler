@@ -1,0 +1,238 @@
+<section
+  class="perfume-service-strip"
+  style="
+    --strip-background: {{ section.settings.background_color }};
+    --strip-text: {{ section.settings.text_color }};
+    --strip-border: {{ section.settings.border_color }};
+  "
+>
+  <div class="perfume-service-strip__inner">
+    {% for block in section.blocks %}
+      <div class="perfume-service-strip__item" {{ block.shopify_attributes }}>
+        <span class="perfume-service-strip__icon" aria-hidden="true">
+          {% case block.settings.icon %}
+            {% when 'sparkle' %}
+              <svg viewBox="0 0 32 32" fill="none">
+                <path d="M16 2c.6 8.3 4.7 12.4 13 13-8.3.6-12.4 4.7-13 13-.6-8.3-4.7-12.4-13-13 8.3-.6 12.4-4.7 13-13Z" stroke="currentColor" stroke-width="1.4"/>
+              </svg>
+            {% when 'ribbon' %}
+              <svg viewBox="0 0 32 32" fill="none">
+                <path d="M7 13h18v14H7V13Zm-2-5h22v5H5V8Zm11 0v19M9.5 4.5C9.5 2.6 11 2 12.4 3.2L16 8H9.5V4.5Zm13 0C22.5 2.6 21 2 19.6 3.2L16 8h6.5V4.5Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+              </svg>
+            {% when 'truck' %}
+              <svg viewBox="0 0 32 32" fill="none">
+                <path d="M3 7h17v16H3V7Zm17 6h5l4 5v5h-9V13ZM8 26a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+              </svg>
+            {% when 'shield' %}
+              <svg viewBox="0 0 32 32" fill="none">
+                <path d="M16 3 27 7v8c0 7-4.6 11.6-11 14-6.4-2.4-11-7-11-14V7l11-4Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+                <path d="m11 16 3 3 7-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+          {% endcase %}
+        </span>
+        <div>
+          <h3>{{ block.settings.heading | escape }}</h3>
+          {% if block.settings.text != blank %}
+            <p>{{ block.settings.text | escape }}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .perfume-service-strip {
+    border-block: 1px solid var(--strip-border);
+    background: var(--strip-background);
+    color: var(--strip-text);
+  }
+
+  .perfume-service-strip__inner {
+    display: grid;
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+    grid-template-columns: repeat(var(--strip-columns, 4), minmax(0, 1fr));
+  }
+
+  .perfume-service-strip__item {
+    display: grid;
+    min-height: 126px;
+    padding: 1.25rem clamp(1rem, 2.5vw, 2.25rem);
+    grid-template-columns: 32px 1fr;
+    gap: 0.85rem;
+    align-items: center;
+    border-inline-end: 1px solid var(--strip-border);
+  }
+
+  .perfume-service-strip__item:first-child {
+    border-inline-start: 1px solid var(--strip-border);
+  }
+
+  .perfume-service-strip__icon {
+    display: inline-flex;
+    width: 30px;
+  }
+
+  .perfume-service-strip__icon svg {
+    width: 100%;
+  }
+
+  .perfume-service-strip h3 {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: -0.01em;
+  }
+
+  .perfume-service-strip p {
+    margin: 0.25rem 0 0;
+    font-size: 0.67rem;
+    line-height: 1.4;
+    opacity: 0.62;
+  }
+
+  @media screen and (max-width: 989px) {
+    .perfume-service-strip__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .perfume-service-strip__item:nth-child(2n) {
+      border-inline-end: 1px solid var(--strip-border);
+    }
+
+    .perfume-service-strip__item:nth-child(n + 3) {
+      border-block-start: 1px solid var(--strip-border);
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .perfume-service-strip__inner {
+      width: 100%;
+      grid-template-columns: 1fr;
+    }
+
+    .perfume-service-strip__item {
+      min-height: 96px;
+      border-inline: 0;
+      border-block-start: 1px solid var(--strip-border);
+    }
+
+    .perfume-service-strip__item:first-child {
+      border-inline-start: 0;
+      border-block-start: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Store promises",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f4e88f"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#24201f"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Dividers",
+      "default": "#c9be68"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "promise",
+      "name": "Promise",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "ribbon",
+              "label": "Gift"
+            },
+            {
+              "value": "truck",
+              "label": "Delivery"
+            },
+            {
+              "value": "shield",
+              "label": "Authenticity"
+            }
+          ],
+          "default": "sparkle"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Complimentary samples"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "A little something extra with every order."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Store promises",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "sparkle",
+            "heading": "Complimentary samples",
+            "text": "A little something extra with every order."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "ribbon",
+            "heading": "Beautifully giftable",
+            "text": "Thoughtful wrapping, ready for the occasion."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "truck",
+            "heading": "Free delivery over $100",
+            "text": "Fast, tracked shipping across Canada."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "icon": "shield",
+            "heading": "Always authentic",
+            "text": "Only genuine fragrance, sourced with care."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

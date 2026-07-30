@@ -1,0 +1,82 @@
+{%- doc -%}
+  Renders automatic and merchant-controlled product badges.
+
+  Custom badge priority:
+  1. Product metafield `custom.badge`
+  2. Product metafield `custom.product_badge`
+  3. The first product tag beginning with the configured prefix (default `badge:`)
+
+  @param {object} product - Product whose badges should be rendered.
+  @param {boolean} [inline] - Render badges in normal document flow.
+{%- enddoc -%}
+
+{% liquid
+  assign custom_badge = blank
+  assign badge_prefix = settings.custom_badge_tag_prefix | default: 'badge:'
+
+  if settings.enable_custom_product_badges
+    assign custom_badge = product.metafields.custom.badge.value
+
+    if custom_badge == blank
+      assign custom_badge = product.metafields.custom.product_badge.value
+    endif
+
+    if custom_badge == blank and badge_prefix != blank
+      assign prefix_length = badge_prefix | size
+
+      for product_tag in product.tags
+        assign product_tag_prefix = product_tag | slice: 0, prefix_length
+
+        if product_tag_prefix == badge_prefix
+          assign custom_badge = product_tag | remove_first: badge_prefix | strip
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  assign product_on_sale = false
+  if product.compare_at_price > product.price
+    assign product_on_sale = true
+  endif
+
+  assign show_badges = false
+  if custom_badge != blank or product.available == false or product_on_sale
+    assign show_badges = true
+  endif
+%}
+
+{% if show_badges %}
+  <div
+    class="product-badges product-badges--{{ settings.badge_position }}{% if inline %} product-badges--inline{% endif %}"
+    style="
+      --badge-border-radius: {{ settings.badge_corner_radius }}px;
+      --badge-font-family: var(--font-{{ settings.badge_font_family }}--family);
+      --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight);
+      --badge-text-transform: {{ settings.badge_text_transform }};
+    "
+    aria-label="Product labels"
+  >
+    {% if custom_badge != blank %}
+      <span
+        class="product-badges__badge product-badges__badge--rectangle product-badges__badge--custom color-custom-badge-custom"
+      >
+        {{ custom_badge | escape }}
+      </span>
+    {% endif %}
+
+    {% if product.available == false %}
+      <span
+        class="product-badges__badge product-badges__badge--rectangle color-custom-badge-sold-out"
+      >
+        {{ 'content.product_badge_sold_out' | t }}
+      </span>
+    {% elsif product_on_sale %}
+      <span
+        class="product-badges__badge product-badges__badge--rectangle color-custom-badge-sale"
+      >
+        {{ 'content.product_badge_sale' | t }}
+      </span>
+    {% endif %}
+  </div>
+{% endif %}
