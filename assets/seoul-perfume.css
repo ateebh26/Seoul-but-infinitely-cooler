@@ -1,0 +1,309 @@
+/*
+ * Seoul-inspired perfume storefront layer.
+ *
+ * This file intentionally contains only presentation overrides. Horizon's
+ * commerce, accessibility, drawer, search, and mega-menu behaviour remain
+ * intact underneath.
+ */
+
+:root {
+  --seoul-ink: #24201f;
+  --seoul-paper: #fffdf9;
+  --seoul-blush: #f5d9dd;
+  --seoul-butter: #f4e88f;
+  --seoul-lilac: #ddd5f3;
+  --seoul-mint: #dbe9d3;
+  --seoul-sky: #d8ebf1;
+  --seoul-coral: #ef8c82;
+  --seoul-radius-sm: 14px;
+  --seoul-radius-md: 22px;
+  --seoul-radius-lg: 34px;
+  --seoul-shadow: 0 18px 50px rgb(55 40 36 / 8%);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--seoul-paper);
+  color: var(--seoul-ink);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  -webkit-font-smoothing: antialiased;
+}
+
+.content-for-layout {
+  overflow: clip;
+}
+
+.content-for-layout h1,
+.content-for-layout h2,
+.content-for-layout h3 {
+  letter-spacing: -0.045em;
+}
+
+.button,
+.button-custom,
+button.shopify-payment-button__button--unbranded {
+  min-height: 44px;
+  border-radius: 999px;
+  padding-inline: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+}
+
+/* Header and announcement bar */
+
+#header-group {
+  position: relative;
+  z-index: var(--layer-header);
+}
+
+.announcement-bar {
+  min-height: 31px;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#header-component .header__row {
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+#header-component[sticky]:not([transparent]) .header__row--top {
+  background: rgb(255 253 249 / 94%);
+  backdrop-filter: blur(16px);
+}
+
+#header-component[sticky][data-scroll-direction='up'] .header__row--top {
+  box-shadow: 0 8px 30px rgb(45 36 34 / 6%);
+}
+
+#header-component .header-logo {
+  min-width: max-content;
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+
+#header-component .header-logo__image-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#header-component .header-logo__image-container:not(:has(img)) {
+  min-height: 32px;
+  padding-inline: 13px;
+  border-radius: 999px;
+  background: var(--seoul-ink);
+  color: var(--seoul-paper);
+}
+
+#header-component .menu-list__link {
+  font-size: 0.72rem;
+  letter-spacing: 0.015em;
+}
+
+#header-component .menu-list__link-title {
+  position: relative;
+}
+
+#header-component .menu-list__link-title::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -5px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 180ms ease;
+}
+
+#header-component .menu-list__link:hover .menu-list__link-title::after,
+#header-component .menu-list__link[aria-expanded='true'] .menu-list__link-title::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Horizon mega-menu, visually tuned to the Seoul reference. */
+
+#header-component .menu-list__submenu {
+  border-top: 1px solid rgb(36 32 31 / 8%);
+}
+
+#header-component .menu-list__submenu-inner {
+  background: var(--seoul-paper);
+  box-shadow: 0 24px 60px rgb(48 35 31 / 10%);
+}
+
+#header-component .mega-menu__grid {
+  gap: 1.75rem;
+}
+
+#header-component .mega-menu__link {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  opacity: 0.72;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+#header-component .mega-menu__link:hover {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+#header-component .mega-menu__link--parent {
+  margin-bottom: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+#header-component .mega-menu__link-image,
+#header-component .mega-menu__content .resource-card__image {
+  border-radius: var(--seoul-radius-md);
+  box-shadow: var(--seoul-shadow);
+}
+
+#header-component .mega-menu__content-list {
+  gap: 1rem;
+}
+
+/* Product cards and badges */
+
+.product-card__content {
+  transition: transform 220ms ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-card:hover .product-card__content {
+    transform: translateY(-3px);
+  }
+}
+
+.product-card .card-gallery {
+  overflow: hidden;
+  border-radius: var(--seoul-radius-md);
+  background: #f5f1eb;
+}
+
+.product-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.product-badges__badge {
+  min-height: 25px;
+  padding-block: 0.3rem;
+  padding-inline: 0.7rem;
+  box-shadow: 0 5px 14px rgb(43 32 29 / 9%);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+}
+
+.product-badges__badge--custom {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-badges__badge--custom::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 28%), transparent 80%);
+  transform: translateX(-120%);
+  transition: transform 500ms ease;
+}
+
+.product-card:hover .product-badges__badge--custom::after {
+  transform: translateX(120%);
+}
+
+/* Shared section title treatment */
+
+.seoul-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.seoul-section-heading__eyebrow {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.seoul-section-heading h2 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2rem, 4.6vw, 4.4rem);
+  line-height: 0.95;
+}
+
+.seoul-section-heading__link {
+  flex: 0 0 auto;
+  border-bottom: 1px solid currentColor;
+  color: inherit;
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 749px) {
+  .seoul-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* Footer */
+
+footer .section-background,
+footer .section {
+  background: var(--seoul-ink);
+  color: var(--seoul-paper);
+}
+
+footer .footer-content {
+  padding-top: clamp(2rem, 5vw, 5rem);
+}
+
+footer input {
+  border-color: rgb(255 253 249 / 38%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

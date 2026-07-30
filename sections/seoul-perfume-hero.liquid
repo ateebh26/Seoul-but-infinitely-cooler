@@ -1,0 +1,457 @@
+{% liquid
+  assign hero_image = section.settings.image
+  assign button_label = section.settings.button_label
+%}
+
+<section
+  class="seoul-perfume-hero seoul-perfume-hero--{{ section.settings.image_position }}"
+  style="
+    --hero-background: {{ section.settings.background_color }};
+    --hero-text: {{ section.settings.text_color }};
+    --hero-accent: {{ section.settings.accent_color }};
+    --hero-min-height: {{ section.settings.height }}px;
+  "
+>
+  <div class="seoul-perfume-hero__media">
+    {% if hero_image != blank %}
+      {{
+        hero_image
+        | image_url: width: 2400
+        | image_tag:
+          widths: '750, 1100, 1500, 2000, 2400',
+          sizes: '100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          class: 'seoul-perfume-hero__image'
+      }}
+    {% else %}
+      <div class="seoul-perfume-hero__placeholder" aria-hidden="true">
+        <span class="seoul-perfume-hero__halo"></span>
+        <span class="seoul-perfume-hero__bottle">
+          <span class="seoul-perfume-hero__cap"></span>
+          <span class="seoul-perfume-hero__label">EAU DE PARFUM</span>
+        </span>
+        <span class="seoul-perfume-hero__orb seoul-perfume-hero__orb--one"></span>
+        <span class="seoul-perfume-hero__orb seoul-perfume-hero__orb--two"></span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="seoul-perfume-hero__overlay"></div>
+
+  <div class="seoul-perfume-hero__content">
+    {% if section.settings.eyebrow != blank %}
+      <span class="seoul-perfume-hero__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+    {% endif %}
+
+    {% if section.settings.heading != blank %}
+      <h1>{{ section.settings.heading }}</h1>
+    {% endif %}
+
+    {% if section.settings.text != blank %}
+      <div class="seoul-perfume-hero__text rte">{{ section.settings.text }}</div>
+    {% endif %}
+
+    {% if button_label != blank %}
+      <a
+        class="seoul-perfume-hero__button"
+        {% if section.settings.button_link != blank %}
+          href="{{ section.settings.button_link }}"
+        {% else %}
+          role="link" aria-disabled="true"
+        {% endif %}
+      >
+        {{ button_label | escape }}
+        <span aria-hidden="true">↗</span>
+      </a>
+    {% endif %}
+  </div>
+
+  {% if section.settings.side_note != blank %}
+    <div class="seoul-perfume-hero__side-note">
+      <span>{{ section.settings.side_note | escape }}</span>
+    </div>
+  {% endif %}
+
+  <div class="seoul-perfume-hero__progress" aria-hidden="true">
+    <span></span>
+  </div>
+</section>
+
+{% stylesheet %}
+  .seoul-perfume-hero {
+    position: relative;
+    isolation: isolate;
+    min-height: var(--hero-min-height);
+    overflow: hidden;
+    background: var(--hero-background);
+    color: var(--hero-text);
+  }
+
+  .seoul-perfume-hero__media,
+  .seoul-perfume-hero__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .seoul-perfume-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .seoul-perfume-hero--left .seoul-perfume-hero__image {
+    object-position: 65% center;
+  }
+
+  .seoul-perfume-hero--right .seoul-perfume-hero__image {
+    object-position: 35% center;
+  }
+
+  .seoul-perfume-hero__overlay {
+    z-index: 1;
+    background: linear-gradient(90deg, rgb(25 20 20 / 32%), transparent 65%);
+    pointer-events: none;
+  }
+
+  .seoul-perfume-hero__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: var(--hero-min-height);
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+    padding-block: clamp(7rem, 13vw, 12rem) clamp(4rem, 8vw, 7rem);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .seoul-perfume-hero--right .seoul-perfume-hero__content {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .seoul-perfume-hero__eyebrow {
+    display: inline-flex;
+    margin-bottom: 1rem;
+    padding: 0.48rem 0.75rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .seoul-perfume-hero h1 {
+    max-width: 13ch;
+    margin: 0;
+    color: inherit;
+    font-size: clamp(3rem, 7vw, 7.3rem);
+    line-height: 0.88;
+    letter-spacing: -0.07em;
+  }
+
+  .seoul-perfume-hero h1 em {
+    color: var(--hero-accent);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+  }
+
+  .seoul-perfume-hero__text {
+    max-width: 35rem;
+    margin-top: 1rem;
+    font-size: clamp(0.82rem, 1.1vw, 1rem);
+    line-height: 1.55;
+  }
+
+  .seoul-perfume-hero__button {
+    display: inline-flex;
+    min-height: 46px;
+    margin-top: 1.35rem;
+    padding-inline: 1.35rem;
+    border-radius: 999px;
+    align-items: center;
+    gap: 1.8rem;
+    background: #24201f;
+    color: #fffdf9;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      transform 180ms ease,
+      background 180ms ease;
+  }
+
+  .seoul-perfume-hero__button:hover {
+    transform: translateY(-2px);
+    background: #000;
+  }
+
+  .seoul-perfume-hero__side-note {
+    position: absolute;
+    z-index: 2;
+    right: 1.5rem;
+    top: 50%;
+    display: flex;
+    min-height: 120px;
+    padding: 0.6rem 0.42rem;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    background: var(--hero-accent);
+    color: #24201f;
+    font-size: 0.6rem;
+    font-weight: 750;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+  }
+
+  .seoul-perfume-hero__progress {
+    position: absolute;
+    z-index: 2;
+    right: 7%;
+    bottom: 2rem;
+    left: 7%;
+    height: 2px;
+    overflow: hidden;
+    background: rgb(255 255 255 / 30%);
+  }
+
+  .seoul-perfume-hero__progress span {
+    display: block;
+    width: 42%;
+    height: 100%;
+    background: currentColor;
+  }
+
+  .seoul-perfume-hero__placeholder {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 72% 30%, rgb(255 255 255 / 72%), transparent 19%),
+      linear-gradient(135deg, var(--hero-background), color-mix(in srgb, var(--hero-background), #ffffff 28%));
+  }
+
+  .seoul-perfume-hero__halo {
+    position: absolute;
+    width: min(57vw, 720px);
+    aspect-ratio: 1;
+    right: 5%;
+    top: 50%;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 28%);
+    filter: blur(3px);
+    transform: translateY(-48%);
+  }
+
+  .seoul-perfume-hero__bottle {
+    position: absolute;
+    right: clamp(11%, 18vw, 24%);
+    bottom: 8%;
+    width: clamp(180px, 25vw, 360px);
+    aspect-ratio: 0.76;
+    border: 2px solid rgb(255 255 255 / 70%);
+    border-radius: 22% 22% 28% 28% / 18% 18% 12% 12%;
+    background: linear-gradient(135deg, rgb(255 255 255 / 64%), rgb(255 255 255 / 12%));
+    box-shadow:
+      inset 20px 0 40px rgb(255 255 255 / 28%),
+      0 35px 60px rgb(104 66 72 / 16%);
+    backdrop-filter: blur(8px);
+  }
+
+  .seoul-perfume-hero__cap {
+    position: absolute;
+    top: -18%;
+    left: 30%;
+    width: 40%;
+    height: 22%;
+    border-radius: 18px 18px 5px 5px;
+    background: #24201f;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 16%);
+  }
+
+  .seoul-perfume-hero__label {
+    position: absolute;
+    inset: 43% 15% auto;
+    padding-block: 1.1rem;
+    border-block: 1px solid rgb(36 32 31 / 28%);
+    color: #24201f;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(0.62rem, 1vw, 0.82rem);
+    letter-spacing: 0.15em;
+    text-align: center;
+  }
+
+  .seoul-perfume-hero__orb {
+    position: absolute;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 32%);
+    box-shadow: inset -10px -10px 20px rgb(255 255 255 / 28%);
+  }
+
+  .seoul-perfume-hero__orb--one {
+    right: 7%;
+    bottom: 8%;
+    width: 11vw;
+    min-width: 90px;
+    aspect-ratio: 1;
+  }
+
+  .seoul-perfume-hero__orb--two {
+    right: 42%;
+    top: 16%;
+    width: 5vw;
+    min-width: 48px;
+    aspect-ratio: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .seoul-perfume-hero,
+    .seoul-perfume-hero__content {
+      min-height: min(780px, 82svh);
+    }
+
+    .seoul-perfume-hero__content {
+      width: min(100% - 1.5rem, 1420px);
+      padding-block: 9rem 4.5rem;
+      justify-content: center;
+    }
+
+    .seoul-perfume-hero h1 {
+      max-width: 10ch;
+      font-size: clamp(3.15rem, 16vw, 5.4rem);
+    }
+
+    .seoul-perfume-hero__overlay {
+      background: linear-gradient(0deg, rgb(25 20 20 / 45%), transparent 72%);
+    }
+
+    .seoul-perfume-hero__side-note {
+      right: -0.55rem;
+      top: 58%;
+    }
+
+    .seoul-perfume-hero__bottle {
+      right: -2%;
+      bottom: 5%;
+      width: 55vw;
+      opacity: 0.76;
+    }
+
+    .seoul-perfume-hero__halo {
+      right: -20%;
+      width: 88vw;
+    }
+
+    .seoul-perfume-hero__progress {
+      right: 1.25rem;
+      bottom: 1.25rem;
+      left: 1.25rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Perfume hero",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Text position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "A scent for every version of you"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find your <em>signature</em> scent."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Original fragrances, thoughtful edits, and little luxuries worth lingering over.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore fragrances"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "side_note",
+      "label": "Vertical side note",
+      "default": "Complimentary samples"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Desktop height",
+      "min": 520,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "default": 720
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#efb9c2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#fffdf9"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#f4e88f"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Perfume hero",
+      "category": "Storytelling"
+    }
+  ]
+}
+{% endschema %}

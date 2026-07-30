@@ -52,7 +52,7 @@
             "text_LWt8Pz": {
               "type": "text",
               "settings": {
-                "text": "<h2>Join our email list</h2>",
+                "text": "<h2>Notes from the perfume counter</h2>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
@@ -76,7 +76,7 @@
             "text_f9CFLH": {
               "type": "text",
               "settings": {
-                "text": "<p>Get exclusive deals and early access to new products.</p>",
+                "text": "<p>New arrivals, scent stories, and genuinely useful fragrance advice—sent occasionally.</p>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
@@ -138,9 +138,9 @@
       "settings": {
         "section_width": "page-width",
         "gap": 20,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 30,
-        "padding-block-end": 30
+        "background_color": "#24201f",
+        "padding-block-start": 56,
+        "padding-block-end": 48
       }
     },
     "footer_utilities_jLGE8U": {
@@ -149,7 +149,7 @@
         "footer_copyright_jweRK8": {
           "type": "footer-copyright",
           "settings": {
-            "show_powered_by": true,
+            "show_powered_by": false,
             "font_size": "0.75rem",
             "case": "none"
           },
@@ -185,8 +185,8 @@
         "section_width": "page-width",
         "gap": 24,
         "divider_thickness": 1,
-        "divider_color": "{{ settings.color_palette.color2 }}",
-        "background_color": "{{ settings.color_palette.background }}",
+        "divider_color": "#5c5350",
+        "background_color": "#24201f",
         "padding-block-start": 20,
         "padding-block-end": 48
       }
