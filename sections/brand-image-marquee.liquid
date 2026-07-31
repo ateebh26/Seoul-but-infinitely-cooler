@@ -1,0 +1,605 @@
+<script
+  src="{{ 'aila-brand-marquee.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{% liquid
+  assign accessible_label = section.settings.accessible_label | strip
+  if accessible_label == blank
+    assign accessible_label = section.settings.heading | strip_html | strip
+  endif
+  if accessible_label == blank
+    assign accessible_label = 'Featured brands'
+  endif
+
+  capture brand_image_sizes
+    echo '(max-width: 749px) '
+    echo section.settings.item_width_mobile
+    echo 'px, '
+    echo section.settings.item_width
+    echo 'px'
+  endcapture
+%}
+
+<section
+  class="aila-brand-marquee"
+  style="
+    --brand-marquee-background: {{ section.settings.background_color }};
+    --brand-marquee-card-background: {{ section.settings.card_background_color }};
+    --brand-marquee-border: {% if section.settings.show_border %}{{ section.settings.border_color }}{% else %}transparent{% endif %};
+    --brand-marquee-text: {{ section.settings.text_color }};
+    --brand-marquee-gap: {{ section.settings.gap }}px;
+    --brand-marquee-item-width: {{ section.settings.item_width }}px;
+    --brand-marquee-item-height: {{ section.settings.item_height }}px;
+    --brand-marquee-item-width-mobile: {{ section.settings.item_width_mobile }}px;
+    --brand-marquee-item-height-mobile: {{ section.settings.item_height_mobile }}px;
+    --brand-marquee-radius: {{ section.settings.card_radius }}px;
+    --brand-marquee-image-padding: {{ section.settings.image_padding }}px;
+    --brand-marquee-padding-top: {{ section.settings.padding_top }}px;
+    --brand-marquee-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {% if section.settings.heading != blank %}
+    <div class="aila-brand-marquee__heading-wrap">
+      <h2 class="aila-brand-marquee__heading">{{ section.settings.heading }}</h2>
+    </div>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <aila-brand-marquee
+      class="aila-brand-marquee__component"
+      data-speed="{{ section.settings.speed }}"
+      data-direction="{{ section.settings.direction }}"
+      role="region"
+      aria-label="{{ accessible_label | escape }}"
+    >
+      <div
+        class="aila-brand-marquee__viewport"
+        data-brand-marquee-viewport
+      >
+        <div
+          class="aila-brand-marquee__content"
+          data-brand-marquee-track
+        >
+          <div
+            class="aila-brand-marquee__items"
+            data-brand-marquee-group
+          >
+            {% for block in section.blocks %}
+              {% liquid
+                assign brand_name = block.settings.name | strip
+                if brand_name == blank
+                  assign brand_name = 'Brand ' | append: forloop.index
+                endif
+
+                assign image_alt = block.settings.image.alt | default: brand_name
+                if section.settings.show_names
+                  assign image_alt = ''
+                endif
+              %}
+
+              {% capture brand_media %}
+                <span class="aila-brand-marquee__media">
+                  {% if block.settings.image != blank %}
+                    {{
+                      block.settings.image
+                      | image_url: width: 900
+                      | image_tag:
+                        widths: '120, 180, 240, 320, 480, 640, 900',
+                        sizes: brand_image_sizes,
+                        loading: 'lazy',
+                        class: 'aila-brand-marquee__image',
+                        alt: image_alt
+                    }}
+                  {% else %}
+                    <span
+                      class="aila-brand-marquee__placeholder"
+                      aria-hidden="true"
+                    >
+                      {{ 'image' | placeholder_svg_tag: 'aila-brand-marquee__placeholder-svg' }}
+                    </span>
+                  {% endif %}
+                </span>
+
+                {% if section.settings.show_names %}
+                  <span class="aila-brand-marquee__name">{{ brand_name | escape }}</span>
+                {% endif %}
+              {% endcapture %}
+
+              {% if block.settings.link != blank %}
+                <a
+                  class="aila-brand-marquee__item"
+                  href="{{ block.settings.link }}"
+                  aria-label="{{ brand_name | escape }}"
+                  {% if block.settings.open_in_new_tab %}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  {% endif %}
+                  {{ block.shopify_attributes }}
+                >
+                  {{ brand_media }}
+                </a>
+              {% else %}
+                <div
+                  class="aila-brand-marquee__item"
+                  {{ block.shopify_attributes }}
+                >
+                  {{ brand_media }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </aila-brand-marquee>
+  {% elsif request.design_mode %}
+    <div class="aila-brand-marquee__empty">
+      Add brand blocks, then choose an image for each brand.
+    </div>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .aila-brand-marquee {
+    overflow: hidden;
+    padding-block: var(--brand-marquee-padding-top) var(--brand-marquee-padding-bottom);
+    background: var(--brand-marquee-background);
+    color: var(--brand-marquee-text);
+  }
+
+  .aila-brand-marquee__heading-wrap {
+    width: min(100% - 2rem, 1420px);
+    margin: 0 auto clamp(1.25rem, 2.5vw, 2.25rem);
+  }
+
+  .aila-brand-marquee__heading {
+    margin: 0;
+    color: inherit;
+    font-size: clamp(1.5rem, 3vw, 2.75rem);
+    line-height: 1.05;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .aila-brand-marquee__component {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .aila-brand-marquee__viewport {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .aila-brand-marquee__content {
+    display: flex;
+    width: max-content;
+    gap: var(--brand-marquee-gap);
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  .aila-brand-marquee__items {
+    display: flex;
+    min-width: max-content;
+    align-items: center;
+    gap: var(--brand-marquee-gap);
+  }
+
+  .aila-brand-marquee__item {
+    display: grid;
+    width: var(--brand-marquee-item-width);
+    flex: 0 0 var(--brand-marquee-item-width);
+    gap: 0.65rem;
+    color: inherit;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .aila-brand-marquee__media {
+    display: flex;
+    width: 100%;
+    height: var(--brand-marquee-item-height);
+    padding: var(--brand-marquee-image-padding);
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--brand-marquee-border);
+    border-radius: var(--brand-marquee-radius);
+    background: var(--brand-marquee-card-background);
+    transition:
+      border-color 220ms ease,
+      transform 220ms ease;
+  }
+
+  .aila-brand-marquee__image,
+  .aila-brand-marquee__placeholder,
+  .aila-brand-marquee__placeholder-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .aila-brand-marquee__image {
+    object-fit: var(--brand-marquee-image-fit, contain);
+  }
+
+  .aila-brand-marquee__placeholder {
+    color: color-mix(in srgb, var(--brand-marquee-text) 18%, transparent);
+  }
+
+  .aila-brand-marquee__placeholder-svg {
+    object-fit: contain;
+  }
+
+  .aila-brand-marquee__name {
+    overflow: hidden;
+    color: inherit;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+  }
+
+  .aila-brand-marquee__item:is(a):hover .aila-brand-marquee__media,
+  .aila-brand-marquee__item:is(a):focus-visible .aila-brand-marquee__media {
+    border-color: color-mix(in srgb, var(--brand-marquee-text) 42%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .aila-brand-marquee__item:is(a):focus-visible {
+    border-radius: var(--brand-marquee-radius);
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  .aila-brand-marquee__empty {
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+    padding: 2rem;
+    border: 1px dashed var(--brand-marquee-border);
+    border-radius: var(--brand-marquee-radius);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .aila-brand-marquee__component[data-ready]:not([data-disabled]) .aila-brand-marquee__content {
+      animation: aila-brand-marquee-motion var(--brand-marquee-duration) linear infinite;
+    }
+
+    .aila-brand-marquee__component:is(:hover, :focus-within) .aila-brand-marquee__content {
+      animation-play-state: paused;
+    }
+
+    .aila-brand-marquee__component[data-direction='right'] .aila-brand-marquee__content {
+      animation-direction: reverse;
+    }
+  }
+
+  @keyframes aila-brand-marquee-motion {
+    to {
+      transform: translate3d(calc(-1 * var(--brand-marquee-distance)), 0, 0);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .aila-brand-marquee {
+      padding-block:
+        min(var(--brand-marquee-padding-top), 56px)
+        min(var(--brand-marquee-padding-bottom), 56px);
+    }
+
+    .aila-brand-marquee__heading-wrap {
+      width: min(100% - 1.25rem, 1420px);
+    }
+
+    .aila-brand-marquee__item {
+      width: var(--brand-marquee-item-width-mobile);
+      flex-basis: var(--brand-marquee-item-width-mobile);
+    }
+
+    .aila-brand-marquee__media {
+      height: var(--brand-marquee-item-height-mobile);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aila-brand-marquee__viewport {
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .aila-brand-marquee__content {
+      animation: none;
+      transform: none;
+      will-change: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% style %}
+  #shopify-section-{{ section.id }} .aila-brand-marquee__image {
+    object-fit: {{ section.settings.image_fit }};
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Brand image marquee",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "accessible_label",
+      "label": "Accessible label",
+      "default": "Featured brands",
+      "info": "Describes this moving image row to screen-reader users."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_names",
+      "label": "Show brand names below images",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Motion"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Move left"
+        },
+        {
+          "value": "reverse",
+          "label": "Move right"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "speed",
+      "label": "Speed",
+      "options": [
+        {
+          "value": "80",
+          "label": "Fast"
+        },
+        {
+          "value": "54",
+          "label": "Relaxed"
+        },
+        {
+          "value": "36",
+          "label": "Slow"
+        }
+      ],
+      "default": "54"
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Contain"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "range",
+      "id": "item_width",
+      "label": "Desktop image width",
+      "min": 100,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "default": 180
+    },
+    {
+      "type": "range",
+      "id": "item_height",
+      "label": "Desktop image height",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "default": 110
+    },
+    {
+      "type": "range",
+      "id": "item_width_mobile",
+      "label": "Mobile image width",
+      "min": 90,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "default": 140
+    },
+    {
+      "type": "range",
+      "id": "item_height_mobile",
+      "label": "Mobile image height",
+      "min": 50,
+      "max": 160,
+      "step": 10,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "image_padding",
+      "label": "Padding inside image cards",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between brands",
+      "min": 8,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Show image card border",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Image card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section background",
+      "default": "#fffdf9"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Image card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Image card border",
+      "default": "#e6dfd8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading and brand names",
+      "default": "#2a2422"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Brand image or logo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Brand name",
+          "default": "Brand name",
+          "info": "Also used as the image description when names are hidden."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Brand link"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open link in a new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand image marquee",
+      "category": "Images",
+      "blocks": [
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        },
+        {
+          "type": "brand"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
