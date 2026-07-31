@@ -1,0 +1,539 @@
+{% liquid
+  assign phone_href = section.settings.phone | strip
+  assign phone_href = phone_href | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | remove: '.'
+  assign directions_url = section.settings.directions_link
+
+  if directions_url == blank
+    assign directions_url = 'https://www.google.com/maps/dir/?api=1&destination=174B+Rideau+St%2C+Ottawa%2C+ON+K1N+5X6'
+  endif
+%}
+
+<section
+  class="store-location"
+  style="
+    --location-map-height: {{ section.settings.map_height }}px;
+    --location-padding-top: {{ section.settings.padding_top }}px;
+    --location-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="store-location__inner">
+    <div class="store-location__card">
+      <div class="store-location__content">
+        {% if section.settings.eyebrow != blank %}
+          <p class="store-location__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {% endif %}
+
+        {% if section.settings.heading != blank %}
+          <h2 class="store-location__heading">{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+
+        {% if section.settings.text != blank %}
+          <p class="store-location__intro">{{ section.settings.text | escape }}</p>
+        {% endif %}
+
+        <div class="store-location__details">
+          {% if section.settings.store_name != blank or section.settings.address != blank %}
+            <div class="store-location__detail store-location__detail--address">
+              <span class="store-location__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <path d="M16 29S27 19.2 27 11.8C27 5.8 22.1 2 16 2S5 5.8 5 11.8C5 19.2 16 29 16 29Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                  <circle cx="16" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/>
+                </svg>
+              </span>
+
+              <div>
+                {% if section.settings.store_name != blank %}
+                  <h3>{{ section.settings.store_name | escape }}</h3>
+                {% endif %}
+
+                {% if section.settings.address != blank %}
+                  <p>{{ section.settings.address | escape | newline_to_br }}</p>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if section.settings.phone != blank %}
+            <div class="store-location__detail">
+              <span class="store-location__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <path d="M8.2 3.5 12.8 9l-3 3.6c2.2 4.3 5.3 7.4 9.6 9.6l3.6-3 5.5 4.6-1.7 4.1c-.5 1.2-1.8 1.9-3.1 1.6C12.8 27.1 4.9 19.2 2.5 8.3c-.3-1.3.4-2.6 1.6-3.1l4.1-1.7Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+
+              <div>
+                <h3>Call us</h3>
+                <a href="tel:{{ phone_href | escape }}">{{ section.settings.phone | escape }}</a>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if section.settings.hours_monday_wednesday != blank
+            or section.settings.hours_thursday_saturday != blank
+            or section.settings.hours_sunday != blank
+          %}
+            <div class="store-location__hours">
+              <div class="store-location__hours-heading">
+                <span class="store-location__icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M16 8v8l5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <h3>Opening hours</h3>
+              </div>
+
+              <dl>
+                {% if section.settings.hours_monday_wednesday != blank %}
+                  <div>
+                    <dt>Monday–Wednesday</dt>
+                    <dd>{{ section.settings.hours_monday_wednesday | escape }}</dd>
+                  </div>
+                {% endif %}
+
+                {% if section.settings.hours_thursday_saturday != blank %}
+                  <div>
+                    <dt>Thursday–Saturday</dt>
+                    <dd>{{ section.settings.hours_thursday_saturday | escape }}</dd>
+                  </div>
+                {% endif %}
+
+                {% if section.settings.hours_sunday != blank %}
+                  <div>
+                    <dt>Sunday</dt>
+                    <dd>{{ section.settings.hours_sunday | escape }}</dd>
+                  </div>
+                {% endif %}
+              </dl>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if section.settings.button_label != blank %}
+          <a class="store-location__button" href="{{ directions_url | escape }}" target="_blank" rel="noopener">
+            {{ section.settings.button_label | escape }}
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="store-location__map">
+        {% if section.settings.map_embed_url contains 'https://www.google.com/maps/embed' %}
+          <iframe
+            src="{{ section.settings.map_embed_url | escape }}"
+            title="Map showing {{ section.settings.store_name | default: 'our store' | escape }}"
+            width="600"
+            height="450"
+            style="border: 0;"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        {% else %}
+          <div class="store-location__map-placeholder">
+            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M16 29S27 19.2 27 11.8C27 5.8 22.1 2 16 2S5 5.8 5 11.8C5 19.2 16 29 16 29Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <circle cx="16" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/>
+            </svg>
+            <p>Add a Google Maps embed URL in this section's settings.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .store-location {
+    padding-block: var(--location-padding-top) var(--location-padding-bottom);
+    background: #fffdf9;
+    color: #2a2422;
+  }
+
+  .store-location__inner {
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+  }
+
+  .store-location__card {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid #e4d9d5;
+    border-radius: 30px;
+    background: #f8e9e9;
+    box-shadow: 0 18px 48px rgb(80 49 43 / 0.08);
+    grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
+  }
+
+  .store-location__content {
+    display: flex;
+    padding: clamp(2rem, 4.5vw, 5rem);
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .store-location__eyebrow {
+    margin: 0 0 1rem;
+    color: #9b5c62;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .store-location__heading {
+    max-width: 12ch;
+    margin: 0;
+    color: inherit;
+    font-size: clamp(2.25rem, 4.5vw, 4.25rem);
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .store-location__intro {
+    max-width: 52ch;
+    margin: 1.5rem 0 0;
+    color: #5f5350;
+    font-size: clamp(0.95rem, 1.15vw, 1.1rem);
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .store-location__details {
+    display: grid;
+    margin-top: clamp(2rem, 3vw, 3rem);
+    gap: 1.35rem;
+  }
+
+  .store-location__detail,
+  .store-location__hours-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .store-location__icon {
+    display: inline-flex;
+    width: 25px;
+    flex: 0 0 25px;
+    color: #9b5c62;
+  }
+
+  .store-location__icon svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .store-location__detail h3,
+  .store-location__hours h3 {
+    margin: 0 0 0.35rem;
+    color: inherit;
+    font-size: 0.95rem;
+    line-height: 1.25;
+  }
+
+  .store-location__detail p,
+  .store-location__detail a {
+    margin: 0;
+    color: #5f5350;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .store-location__detail a {
+    text-underline-offset: 0.2em;
+  }
+
+  .store-location__hours {
+    padding-top: 1.35rem;
+    border-top: 1px solid rgb(99 74 70 / 0.16);
+  }
+
+  .store-location__hours dl {
+    margin: 0.85rem 0 0 2.15rem;
+  }
+
+  .store-location__hours dl div {
+    display: flex;
+    padding-block: 0.25rem;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .store-location__hours dt,
+  .store-location__hours dd {
+    margin: 0;
+    color: #5f5350;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .store-location__hours dd {
+    flex: 0 0 auto;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .store-location__button {
+    display: inline-flex;
+    width: fit-content;
+    margin-top: clamp(2rem, 3vw, 3rem);
+    padding: 0.95rem 1.35rem;
+    border: 1px solid #2a2422;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: #2a2422;
+    color: #fffdf9;
+    font-size: 0.9rem;
+    font-weight: 650;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .store-location__button svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 160ms ease;
+  }
+
+  .store-location__button:hover {
+    background: transparent;
+    color: #2a2422;
+    transform: translateY(-1px);
+  }
+
+  .store-location__button:hover svg {
+    transform: translateX(2px);
+  }
+
+  .store-location__button:focus-visible {
+    outline: 2px solid #2a2422;
+    outline-offset: 3px;
+  }
+
+  .store-location__map {
+    position: relative;
+    min-height: var(--location-map-height);
+    background: #eadbd6;
+  }
+
+  .store-location__map iframe {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .store-location__map-placeholder {
+    display: grid;
+    position: absolute;
+    inset: 0;
+    padding: 2rem;
+    place-content: center;
+    place-items: center;
+    color: #7b6661;
+    text-align: center;
+  }
+
+  .store-location__map-placeholder svg {
+    width: 44px;
+  }
+
+  .store-location__map-placeholder p {
+    max-width: 28ch;
+    margin: 1rem 0 0;
+  }
+
+  @media screen and (max-width: 989px) {
+    .store-location__card {
+      grid-template-columns: 1fr;
+    }
+
+    .store-location__heading {
+      max-width: 16ch;
+    }
+
+    .store-location__map {
+      min-height: min(var(--location-map-height), 480px);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .store-location {
+      padding-block:
+        min(var(--location-padding-top), 56px)
+        min(var(--location-padding-bottom), 56px);
+    }
+
+    .store-location__inner {
+      width: min(100% - 1.25rem, 1420px);
+    }
+
+    .store-location__card {
+      border-radius: 24px;
+    }
+
+    .store-location__content {
+      padding: 2rem 1.35rem 2.25rem;
+    }
+
+    .store-location__hours dl {
+      margin-left: 0;
+    }
+
+    .store-location__hours dl div {
+      gap: 0.75rem;
+    }
+
+    .store-location__hours dt,
+    .store-location__hours dd {
+      font-size: 0.82rem;
+    }
+
+    .store-location__map {
+      min-height: 380px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Store location map",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our Ottawa boutique"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Come visit us"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Supporting text",
+      "default": "Come explore our fragrances in person and let us help you find a scent that feels like you."
+    },
+    {
+      "type": "header",
+      "content": "Store details"
+    },
+    {
+      "type": "text",
+      "id": "store_name",
+      "label": "Store name",
+      "default": "Aila Fragrance and Gift"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "Address",
+      "default": "174B Rideau St\nOttawa, ON K1N 5X6"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone number",
+      "default": "(514) 632-4316"
+    },
+    {
+      "type": "text",
+      "id": "hours_monday_wednesday",
+      "label": "Monday–Wednesday",
+      "default": "11:00 am–7:00 pm"
+    },
+    {
+      "type": "text",
+      "id": "hours_thursday_saturday",
+      "label": "Thursday–Saturday",
+      "default": "11:00 am–8:00 pm"
+    },
+    {
+      "type": "text",
+      "id": "hours_sunday",
+      "label": "Sunday",
+      "default": "11:00 am–6:00 pm"
+    },
+    {
+      "type": "header",
+      "content": "Map and directions"
+    },
+    {
+      "type": "textarea",
+      "id": "map_embed_url",
+      "label": "Google Maps embed URL",
+      "info": "Paste only the URL inside the iframe's src attribute.",
+      "default": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5425.249312129252!2d-75.69170042383283!3d45.42690737107336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cce05a4c2bf4d75%3A0xaf80fe4c851471cd!2sAila%20Fragrance%20and%20Gift!5e1!3m2!1sen!2sca!4v1785466181134!5m2!1sen!2sca"
+    },
+    {
+      "type": "url",
+      "id": "directions_link",
+      "label": "Directions link"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Get directions"
+    },
+    {
+      "type": "range",
+      "id": "map_height",
+      "label": "Map height",
+      "min": 380,
+      "max": 720,
+      "step": 10,
+      "unit": "px",
+      "default": 620
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    }
+  ],
+  "presets": [
+    {
+      "name": "Store location map",
+      "category": "Store information"
+    }
+  ]
+}
+{% endschema %}
