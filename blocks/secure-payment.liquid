@@ -1,0 +1,146 @@
+{% liquid
+  assign payment_types = shop.enabled_payment_types
+%}
+
+<div
+  class="secure-payment-card"
+  style="
+    --secure-payment-background: {{ block.settings.background_color }};
+    --secure-payment-radius: {{ block.settings.corner_radius }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.heading != blank %}
+    <h2 class="secure-payment-card__heading">{{ block.settings.heading | escape }}</h2>
+  {% endif %}
+
+  {% if payment_types != blank %}
+    <div
+      class="secure-payment-card__icons"
+      role="list"
+      aria-label="{{ 'Payment methods' | escape }}"
+    >
+      {% for payment_type in payment_types limit: block.settings.icon_limit %}
+        <span class="secure-payment-card__icon" role="listitem">
+          {{ payment_type | payment_type_svg_tag: class: 'secure-payment-card__icon-svg' }}
+        </span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if block.settings.text != blank %}
+    <div class="secure-payment-card__text rte">
+      {{ block.settings.text }}
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .secure-payment-card {
+    width: 100%;
+    padding: clamp(22px, 5vw, 34px);
+    border-radius: var(--secure-payment-radius, 20px);
+    background: var(--secure-payment-background, #f5f5f5);
+  }
+
+  .secure-payment-card__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  .secure-payment-card__icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-block: 28px 24px;
+  }
+
+  .secure-payment-card__icon {
+    display: inline-flex;
+    width: 48px;
+    height: 32px;
+  }
+
+  .secure-payment-card__icon-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: none;
+  }
+
+  .secure-payment-card__text {
+    max-width: 36rem;
+    font-size: clamp(1rem, 2.4vw, 1.125rem);
+    line-height: 1.45;
+    letter-spacing: 0.015em;
+  }
+
+  .secure-payment-card__text > * {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .secure-payment-card {
+      padding: 22px;
+    }
+
+    .secure-payment-card__icons {
+      margin-block: 22px 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Secure payment",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Secure payment"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>We ensure secure payment with PCI-compliant checkout, SSL encryption, and trusted payment providers.</p>"
+    },
+    {
+      "type": "range",
+      "id": "icon_limit",
+      "label": "Maximum payment icons",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Secure payment"
+    }
+  ]
+}
+{% endschema %}

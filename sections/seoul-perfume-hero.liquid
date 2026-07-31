@@ -1,4 +1,5 @@
 {% liquid
+  assign hero_video = section.settings.video
   assign hero_image = section.settings.image
   assign button_label = section.settings.button_label
 %}
@@ -13,7 +14,19 @@
   "
 >
   <div class="seoul-perfume-hero__media">
-    {% if hero_image != blank %}
+    {% if hero_video != blank %}
+      {{
+        hero_video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          controls: false,
+          playsinline: true,
+          preload: 'metadata',
+          class: 'seoul-perfume-hero__video'
+      }}
+    {% elsif hero_image != blank %}
       {{
         hero_image
         | image_url: width: 2400
@@ -94,17 +107,21 @@
     inset: 0;
   }
 
-  .seoul-perfume-hero__image {
+  .seoul-perfume-hero__image,
+  .seoul-perfume-hero__video {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .seoul-perfume-hero--left .seoul-perfume-hero__image {
+  .seoul-perfume-hero--left .seoul-perfume-hero__image,
+  .seoul-perfume-hero--left .seoul-perfume-hero__video {
     object-position: 65% center;
   }
 
-  .seoul-perfume-hero--right .seoul-perfume-hero__image {
+  .seoul-perfume-hero--right .seoul-perfume-hero__image,
+  .seoul-perfume-hero--right .seoul-perfume-hero__video {
     object-position: 35% center;
   }
 
@@ -363,9 +380,16 @@
   "class": "section-wrapper seoul-section",
   "settings": [
     {
+      "type": "video",
+      "id": "video",
+      "label": "Hero video",
+      "info": "Optional. When selected, the video replaces the hero image and plays muted on a loop."
+    },
+    {
       "type": "image_picker",
       "id": "image",
-      "label": "Hero image"
+      "label": "Hero image",
+      "info": "Shown when no hero video is selected."
     },
     {
       "type": "select",
