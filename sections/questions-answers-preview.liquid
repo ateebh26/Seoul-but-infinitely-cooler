@@ -1,0 +1,397 @@
+<section
+  class="questions-preview"
+  style="
+    --questions-background: {{ section.settings.background_color }};
+    --questions-card-background: {{ section.settings.card_background_color }};
+    --questions-border: {{ section.settings.border_color }};
+    --questions-text: {{ section.settings.text_color }};
+    --questions-muted: {{ section.settings.muted_text_color }};
+    --questions-radius: {{ section.settings.card_radius }}px;
+    --questions-padding-top-setting: {{ section.settings.padding_top }}px;
+    --questions-padding-bottom-setting: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="questions-preview__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="questions-preview__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    <div class="questions-preview__grid">
+      {% for block in section.blocks %}
+        <article class="questions-preview__card" {{ block.shopify_attributes }}>
+          {% if block.settings.heading != blank %}
+            <h3 class="questions-preview__card-heading">{{ block.settings.heading | escape }}</h3>
+          {% endif %}
+
+          <div class="questions-preview__items">
+            {% if block.settings.question_1 != blank %}
+              <div class="questions-preview__item">
+                <p class="questions-preview__question">{{ block.settings.question_1 | escape }}</p>
+                {% if block.settings.answer_1 != blank %}
+                  <p class="questions-preview__answer">{{ block.settings.answer_1 | escape }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if block.settings.question_2 != blank %}
+              <div class="questions-preview__item">
+                <p class="questions-preview__question">{{ block.settings.question_2 | escape }}</p>
+                {% if block.settings.answer_2 != blank %}
+                  <p class="questions-preview__answer">{{ block.settings.answer_2 | escape }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if block.settings.question_3 != blank %}
+              <div class="questions-preview__item">
+                <p class="questions-preview__question">{{ block.settings.question_3 | escape }}</p>
+                {% if block.settings.answer_3 != blank %}
+                  <p class="questions-preview__answer">{{ block.settings.answer_3 | escape }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if block.settings.link_label != blank %}
+            <a
+              class="questions-preview__link"
+              {% if block.settings.link != blank %}
+                href="{{ block.settings.link }}"
+              {% else %}
+                role="link"
+                aria-disabled="true"
+              {% endif %}
+            >
+              {{ block.settings.link_label | escape }}
+              <span aria-hidden="true">→</span>
+            </a>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .questions-preview {
+    padding-block: var(--questions-padding-top-setting) var(--questions-padding-bottom-setting);
+    background: var(--questions-background);
+    color: var(--questions-text);
+  }
+
+  .questions-preview__inner {
+    width: min(100% - 2rem, 1420px);
+    margin-inline: auto;
+  }
+
+  .questions-preview__heading {
+    margin: 0 0 clamp(2rem, 4vw, 4.5rem);
+    color: inherit;
+    font-size: clamp(2rem, 4vw, 3.75rem);
+    line-height: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .questions-preview__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1rem, 2.2vw, 2rem);
+  }
+
+  .questions-preview__card {
+    display: flex;
+    min-height: clamp(390px, 35vw, 550px);
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+    border: 1px solid var(--questions-border);
+    border-radius: var(--questions-radius);
+    flex-direction: column;
+    background: var(--questions-card-background);
+  }
+
+  .questions-preview__card-heading {
+    margin: 0 0 clamp(2rem, 4vw, 3.5rem);
+    color: inherit;
+    font-size: clamp(1.35rem, 2vw, 2rem);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .questions-preview__items {
+    display: grid;
+    gap: clamp(1.75rem, 3vw, 2.75rem);
+  }
+
+  .questions-preview__item p {
+    margin: 0;
+  }
+
+  .questions-preview__question {
+    display: -webkit-box;
+    overflow: hidden;
+    color: inherit;
+    font-size: clamp(1rem, 1.35vw, 1.35rem);
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .questions-preview__answer {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 0.65rem !important;
+    color: var(--questions-muted);
+    font-size: clamp(0.82rem, 1vw, 1rem);
+    line-height: 1.45;
+    letter-spacing: 0.025em;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .questions-preview__link {
+    display: inline-flex;
+    width: fit-content;
+    margin-top: auto;
+    padding-top: 2rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid currentColor;
+    color: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .questions-preview__link[aria-disabled='true'] {
+    cursor: default;
+    opacity: 0.55;
+  }
+
+  @media screen and (max-width: 989px) {
+    .questions-preview__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .questions-preview__card {
+      min-height: auto;
+    }
+
+    .questions-preview__card-heading {
+      margin-bottom: 2rem;
+    }
+
+    .questions-preview__answer {
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .questions-preview {
+      padding-block:
+        min(var(--questions-padding-top-setting), 56px)
+        min(var(--questions-padding-bottom-setting), 56px);
+    }
+
+    .questions-preview__inner {
+      width: min(100% - 1.25rem, 1420px);
+    }
+
+    .questions-preview__heading {
+      margin-bottom: 1.75rem;
+    }
+
+    .questions-preview__card {
+      padding: 1.4rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Questions preview",
+  "tag": "div",
+  "class": "section-wrapper seoul-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Questions? We've Got Answers!"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffdf9"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background",
+      "default": "#fffef6"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Card border",
+      "default": "#d9d5c9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#2a2422"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Answer text",
+      "default": "#8e8984"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Question category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Category heading",
+          "default": "Fragrances & Products"
+        },
+        {
+          "type": "text",
+          "id": "question_1",
+          "label": "Question 1",
+          "default": "How do I choose a fragrance online?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer_1",
+          "label": "Answer 1",
+          "default": "Use the notes, fragrance family, and product details to narrow your search."
+        },
+        {
+          "type": "text",
+          "id": "question_2",
+          "label": "Question 2",
+          "default": "Are your fragrances authentic?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer_2",
+          "label": "Answer 2",
+          "default": "We only offer genuine fragrances, sourced with care."
+        },
+        {
+          "type": "text",
+          "id": "question_3",
+          "label": "Question 3",
+          "default": "How long will a fragrance last?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer_3",
+          "label": "Answer 3",
+          "default": "Longevity varies by concentration, notes, skin, and environment."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Category link"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Questions preview",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "heading": "Fragrances & Products",
+            "question_1": "How do I choose a fragrance online?",
+            "answer_1": "Use the notes, fragrance family, and product details to narrow your search.",
+            "question_2": "Are your fragrances authentic?",
+            "answer_2": "We only offer genuine fragrances, sourced with care.",
+            "question_3": "How long will a fragrance last?",
+            "answer_3": "Longevity varies by concentration, notes, skin, and environment."
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "question_1": "Where do you ship and how long does delivery take?",
+            "answer_1": "Add your current shipping regions and estimated delivery times here.",
+            "question_2": "What is your return policy?",
+            "answer_2": "Add your store's return window and product-condition requirements here.",
+            "question_3": "Do you offer international shipping?",
+            "answer_3": "Add your current international shipping availability here."
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "heading": "About Aila Fragrance",
+            "question_1": "What makes Aila Fragrance different?",
+            "answer_1": "A carefully chosen fragrance edit with approachable wholesale pricing.",
+            "question_2": "Are your products sourced directly?",
+            "answer_2": "Every fragrance is selected with authenticity and quality in mind.",
+            "question_3": "Can you help me choose a gift?",
+            "answer_3": "Browse by scent family or contact us for a thoughtful recommendation."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
