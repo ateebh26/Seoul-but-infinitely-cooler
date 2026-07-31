@@ -1,0 +1,1050 @@
+<script
+  src="{{ 'aila-limited-deal.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{%- liquid
+  assign deal_product = section.settings.product
+  assign selected_variant = deal_product.selected_or_first_available_variant
+  assign discount_multiplier = 100 | minus: section.settings.discount_percent
+  assign initial_sale_price = 0
+  assign product_form_id = 'AilaLimitedDealForm-' | append: section.id
+  assign currency_code = cart.currency.iso_code | default: shop.currency
+  assign locale_code = request.locale.iso_code | default: 'en-CA'
+  assign display_description = section.settings.description
+
+  if selected_variant != blank
+    assign initial_sale_price = selected_variant.price | times: discount_multiplier | plus: 50 | divided_by: 100
+  endif
+
+  if display_description == blank and deal_product != blank
+    assign display_description = deal_product.description | strip_html | truncate: 240
+  endif
+-%}
+
+<div
+  class="aila-deal-shell"
+  style="
+    --aila-deal-section-bg: {{ section.settings.section_background }};
+    --aila-deal-card-bg: {{ section.settings.card_background }};
+    --aila-deal-media-bg: {{ section.settings.media_background }};
+    --aila-deal-text: {{ section.settings.text_color }};
+    --aila-deal-muted: {{ section.settings.muted_text_color }};
+    --aila-deal-accent: {{ section.settings.accent_color }};
+    --aila-deal-accent-text: {{ section.settings.accent_text_color }};
+    --aila-deal-radius: {{ section.settings.card_radius }}px;
+    --aila-deal-pad-top: {{ section.settings.padding_top }}px;
+    --aila-deal-pad-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {%- if deal_product != blank -%}
+    <aila-limited-deal
+      class="aila-deal"
+      data-currency="{{ currency_code | escape }}"
+      data-locale="{{ locale_code | escape }}"
+      data-discount-percent="{{ section.settings.discount_percent }}"
+      data-end-date="{{ section.settings.end_date | escape }}"
+      data-end-time="{{ section.settings.end_time | escape }}"
+      data-time-zone="America/Toronto"
+      data-expiry-behavior="{{ section.settings.expiry_behavior }}"
+      data-design-mode="{{ request.design_mode }}"
+      data-show-inventory-quantity="{{ section.settings.show_inventory_quantity }}"
+      data-in-stock-label="{{ section.settings.in_stock_label | escape }}"
+      data-sold-out-label="{{ section.settings.sold_out_label | escape }}"
+      data-add-to-cart-label="{{ section.settings.add_to_cart_label | escape }}"
+    >
+      <article class="aila-deal__card">
+        <div class="aila-deal__media">
+          <span class="aila-deal__media-badge deal-only">
+            {{- section.settings.badge_text | escape -}}
+          </span>
+
+          {%- if section.settings.video != blank -%}
+            {{
+              section.settings.video
+              | video_tag:
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true,
+                preload: 'metadata',
+                class: 'aila-deal__media-element'
+            }}
+          {%- elsif section.settings.image != blank -%}
+            {{
+              section.settings.image
+              | image_url: width: 1800
+              | image_tag:
+                loading: 'lazy',
+                widths: '480, 720, 960, 1200, 1600, 1800',
+                sizes: '(min-width: 900px) 52vw, 100vw',
+                class: 'aila-deal__media-element'
+            }}
+          {%- elsif deal_product.featured_media.preview_image != blank -%}
+            {{
+              deal_product.featured_media.preview_image
+              | image_url: width: 1800
+              | image_tag:
+                loading: 'lazy',
+                widths: '480, 720, 960, 1200, 1600, 1800',
+                sizes: '(min-width: 900px) 52vw, 100vw',
+                alt: deal_product.featured_media.alt,
+                class: 'aila-deal__media-element'
+            }}
+          {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag: 'aila-deal__placeholder' }}
+          {%- endif -%}
+        </div>
+
+        <div class="aila-deal__content">
+          <div class="aila-deal__topline">
+            <span class="aila-deal__badge deal-only">{{ section.settings.badge_text | escape }}</span>
+            <span class="aila-deal__badge aila-deal__badge--quiet standard-only">
+              {{- section.settings.expired_badge_text | escape -}}
+            </span>
+
+            {%- if section.settings.show_vendor and deal_product.vendor != blank -%}
+              <span class="aila-deal__vendor">{{ deal_product.vendor | escape }}</span>
+            {%- endif -%}
+          </div>
+
+          <div class="aila-deal__heading-group">
+            {%- if section.settings.eyebrow != blank -%}
+              <p class="aila-deal__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+            {%- endif -%}
+
+            <h2 class="aila-deal__title">
+              <a href="{{ deal_product.url }}">{{ deal_product.title | escape }}</a>
+            </h2>
+          </div>
+
+          <div class="aila-deal__prices" aria-label="Product price">
+            <span class="aila-deal__sale-price deal-only" data-deal-sale-price>
+              {{- initial_sale_price | money_with_currency -}}
+            </span>
+            <s class="aila-deal__regular-price deal-only" data-deal-regular-price>
+              {{- selected_variant.price | money_with_currency -}}
+            </s>
+            <span class="aila-deal__standard-price standard-only" data-deal-regular-price>
+              {{- selected_variant.price | money_with_currency -}}
+            </span>
+            <span class="aila-deal__saving deal-only">
+              {{- section.settings.discount_percent }}% off
+            </span>
+          </div>
+
+          {%- if section.settings.show_inventory -%}
+            <p
+              class="aila-deal__inventory{% unless selected_variant.available %} is-sold-out{% endunless %}"
+              data-deal-inventory
+            >
+              {%- if selected_variant.available -%}
+                {%- if
+                  section.settings.show_inventory_quantity
+                  and selected_variant.inventory_management != blank
+                  and selected_variant.inventory_quantity > 0
+                -%}
+                  {{ selected_variant.inventory_quantity }} {{ section.settings.in_stock_label | escape }}
+                {%- else -%}
+                  {{ section.settings.in_stock_label | escape }}
+                {%- endif -%}
+              {%- else -%}
+                {{ section.settings.sold_out_label | escape }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+
+          {%- if display_description != blank -%}
+            <div class="aila-deal__description">
+              {%- if section.settings.description != blank -%}
+                {{ section.settings.description }}
+              {%- else -%}
+                <p>{{ display_description }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          <div class="aila-deal__countdown deal-only">
+            <div class="aila-deal__countdown-heading">
+              <p>{{ section.settings.countdown_label | escape }}</p>
+              <span data-deal-deadline-label></span>
+            </div>
+
+            <span class="visually-hidden" data-deal-countdown-label></span>
+            <div class="aila-deal__countdown-grid" aria-hidden="true">
+              <div class="aila-deal__countdown-unit">
+                <strong data-deal-days>00</strong>
+                <span>Days</span>
+              </div>
+              <div class="aila-deal__countdown-unit">
+                <strong data-deal-hours>00</strong>
+                <span>Hours</span>
+              </div>
+              <div class="aila-deal__countdown-unit">
+                <strong data-deal-minutes>00</strong>
+                <span>Minutes</span>
+              </div>
+              <div class="aila-deal__countdown-unit">
+                <strong data-deal-seconds>00</strong>
+                <span>Seconds</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="aila-deal__expired-note standard-only">
+            {{ section.settings.expired_text | escape }}
+          </p>
+
+          <product-form-component
+            id="AilaLimitedDealProductForm-{{ section.id }}"
+            data-section-id="{{ section.id }}"
+            data-product-id="{{ deal_product.id }}"
+            on:submit="/handleSubmit"
+            class="aila-deal__product-form"
+          >
+            <div
+              class="visually-hidden"
+              aria-live="assertive"
+              role="status"
+              aria-atomic="true"
+              ref="liveRegion"
+            ></div>
+
+            {%- form 'product',
+              deal_product,
+              id: product_form_id,
+              novalidate: 'novalidate',
+              data-type: 'add-to-cart-form'
+            -%}
+              <input
+                type="hidden"
+                name="id"
+                value="{{ selected_variant.id }}"
+                ref="variantId"
+                data-deal-variant-input
+              >
+              <input type="hidden" name="quantity" value="1">
+
+              {%- unless deal_product.has_only_default_variant -%}
+                <fieldset class="aila-deal__variants">
+                  <legend>{{ section.settings.variant_label | escape }}</legend>
+                  <div class="aila-deal__variant-list">
+                    {%- for variant in deal_product.variants -%}
+                      <button
+                        type="button"
+                        class="aila-deal__variant{% if variant.id == selected_variant.id %} is-selected{% endif %}"
+                        data-deal-variant
+                        data-variant-id="{{ variant.id }}"
+                        data-price="{{ variant.price }}"
+                        data-available="{{ variant.available }}"
+                        data-inventory="{{ variant.inventory_quantity }}"
+                        data-inventory-tracked="{% if variant.inventory_management != blank %}true{% else %}false{% endif %}"
+                        aria-pressed="{% if variant.id == selected_variant.id %}true{% else %}false{% endif %}"
+                      >
+                        {{ variant.title | escape }}
+                      </button>
+                    {%- endfor -%}
+                  </div>
+                </fieldset>
+              {%- else -%}
+                <button
+                  type="button"
+                  class="aila-deal__variant is-selected visually-hidden"
+                  data-deal-variant
+                  data-variant-id="{{ selected_variant.id }}"
+                  data-price="{{ selected_variant.price }}"
+                  data-available="{{ selected_variant.available }}"
+                  data-inventory="{{ selected_variant.inventory_quantity }}"
+                  data-inventory-tracked="{% if selected_variant.inventory_management != blank %}true{% else %}false{% endif %}"
+                  aria-pressed="true"
+                  tabindex="-1"
+                >
+                  {{ selected_variant.title | escape }}
+                </button>
+              {%- endunless -%}
+
+              <div class="aila-deal__actions">
+                <button
+                  type="submit"
+                  name="add"
+                  class="button aila-deal__add-button"
+                  {% unless selected_variant.available %}
+                    disabled
+                    aria-disabled="true"
+                  {% endunless %}
+                >
+                  <span data-deal-add-label>
+                    {%- if selected_variant.available -%}
+                      {{ section.settings.add_to_cart_label | escape }}
+                    {%- else -%}
+                      {{ section.settings.sold_out_label | escape }}
+                    {%- endif -%}
+                  </span>
+                </button>
+
+                {%- if section.settings.show_buy_now -%}
+                  <div class="aila-deal__buy-now"{% unless selected_variant.available %} hidden{% endunless %}>
+                    {{ form | payment_button }}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endform -%}
+          </product-form-component>
+
+          {%- if request.design_mode -%}
+            <p class="aila-deal__editor-note aila-deal__editor-note--unscheduled">
+              Enter a future deal date in YYYY-MM-DD format to activate the promotional display.
+            </p>
+            <p class="aila-deal__editor-note aila-deal__editor-note--expired">
+              This deadline has passed. The live section is following the selected expiry behaviour.
+            </p>
+          {%- endif -%}
+        </div>
+      </article>
+    </aila-limited-deal>
+  {%- elsif request.design_mode -%}
+    <div class="aila-deal-empty">
+      <p class="aila-deal-empty__eyebrow">Limited-time deal</p>
+      <h2>Choose a product to build this feature.</h2>
+      <p>
+        Select the highlighted product in this section’s settings, then enter the matching discount and deadline.
+      </p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .aila-deal-shell {
+    display: block;
+    padding-block: var(--aila-deal-pad-top) var(--aila-deal-pad-bottom);
+    background: var(--aila-deal-section-bg);
+    color: var(--aila-deal-text);
+  }
+
+  .aila-deal {
+    display: block;
+    width: min(1600px, calc(100% - 40px));
+    margin-inline: auto;
+  }
+
+  .aila-deal[hidden] {
+    display: none;
+  }
+
+  .aila-deal__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(420px, 0.96fr);
+    overflow: hidden;
+    min-height: 680px;
+    border-radius: var(--aila-deal-radius);
+    background: var(--aila-deal-card-bg);
+    box-shadow: 0 28px 70px rgb(24 15 15 / 18%);
+  }
+
+  .aila-deal__media {
+    position: relative;
+    min-width: 0;
+    min-height: 620px;
+    overflow: hidden;
+    background: var(--aila-deal-media-bg);
+  }
+
+  .aila-deal__media-element,
+  .aila-deal__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .aila-deal__media-element {
+    display: block;
+    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .aila-deal__media:hover .aila-deal__media-element {
+    transform: scale(1.025);
+  }
+
+  .aila-deal__placeholder {
+    display: block;
+    padding: 16%;
+    color: color-mix(in srgb, var(--aila-deal-text) 25%, transparent);
+  }
+
+  .aila-deal__media-badge {
+    position: absolute;
+    z-index: 2;
+    inset: 24px auto auto 24px;
+    padding: 10px 15px;
+    border-radius: 999px;
+    background: var(--aila-deal-accent);
+    color: var(--aila-deal-accent-text);
+    font-size: 0.74rem;
+    font-weight: 750;
+    letter-spacing: 0.11em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .aila-deal__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    padding: clamp(40px, 5vw, 88px);
+  }
+
+  .aila-deal__topline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    margin-bottom: 22px;
+  }
+
+  .aila-deal__badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 34px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--aila-deal-accent);
+    color: var(--aila-deal-accent-text);
+    font-size: 0.74rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .aila-deal__badge--quiet {
+    background: color-mix(in srgb, var(--aila-deal-text) 8%, transparent);
+    color: var(--aila-deal-text);
+  }
+
+  .aila-deal__vendor {
+    color: var(--aila-deal-muted);
+    font-size: 0.92rem;
+    letter-spacing: 0.08em;
+  }
+
+  .aila-deal__heading-group {
+    display: grid;
+    gap: 8px;
+  }
+
+  .aila-deal__eyebrow,
+  .aila-deal__countdown-heading p,
+  .aila-deal__editor-note,
+  .aila-deal__expired-note {
+    margin: 0;
+  }
+
+  .aila-deal__eyebrow {
+    color: var(--aila-deal-muted);
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .aila-deal__title {
+    max-width: 16ch;
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.2rem, 4vw, 4.5rem);
+    font-weight: var(--font-heading--weight);
+    letter-spacing: -0.045em;
+    line-height: 0.96;
+  }
+
+  .aila-deal__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .aila-deal__title a:hover {
+    opacity: 0.72;
+  }
+
+  .aila-deal__prices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 12px;
+    margin-top: 24px;
+  }
+
+  .aila-deal__sale-price,
+  .aila-deal__standard-price {
+    font-size: clamp(1.35rem, 2vw, 1.9rem);
+    font-weight: 720;
+    letter-spacing: -0.02em;
+  }
+
+  .aila-deal__regular-price {
+    color: var(--aila-deal-muted);
+    font-size: 1rem;
+  }
+
+  .aila-deal__saving {
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--aila-deal-accent) 20%, transparent);
+    color: var(--aila-deal-text);
+    font-size: 0.76rem;
+    font-weight: 700;
+  }
+
+  .aila-deal__inventory {
+    width: fit-content;
+    margin: 16px 0 0;
+    padding: 7px 11px;
+    border-radius: 8px;
+    background: #dcefdc;
+    color: #245b31;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .aila-deal__inventory.is-sold-out {
+    background: #f3dddd;
+    color: #7d2525;
+  }
+
+  .aila-deal__description {
+    max-width: 58ch;
+    margin-top: 22px;
+    color: var(--aila-deal-muted);
+    font-size: clamp(0.96rem, 1.2vw, 1.08rem);
+    line-height: 1.65;
+  }
+
+  .aila-deal__description p {
+    margin: 0;
+  }
+
+  .aila-deal__countdown {
+    display: grid;
+    gap: 15px;
+    margin-top: 30px;
+  }
+
+  .aila-deal__countdown-heading {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 18px;
+    font-size: 0.83rem;
+  }
+
+  .aila-deal__countdown-heading p {
+    font-weight: 720;
+  }
+
+  .aila-deal__countdown-heading span {
+    color: var(--aila-deal-muted);
+  }
+
+  .aila-deal__countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .aila-deal__countdown-unit {
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    min-width: 0;
+    padding: 13px 6px 11px;
+    border: 1px solid color-mix(in srgb, var(--aila-deal-text) 13%, transparent);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--aila-deal-card-bg) 82%, var(--aila-deal-accent) 18%);
+  }
+
+  .aila-deal__countdown-unit strong {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+
+  .aila-deal__countdown-unit span {
+    overflow: hidden;
+    max-width: 100%;
+    color: var(--aila-deal-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+  }
+
+  .aila-deal__expired-note {
+    margin-top: 24px;
+    color: var(--aila-deal-muted);
+    line-height: 1.55;
+  }
+
+  .aila-deal__product-form {
+    display: block;
+    margin-top: 28px;
+  }
+
+  .aila-deal__variants {
+    margin: 0 0 20px;
+    padding: 0;
+    border: 0;
+  }
+
+  .aila-deal__variants legend {
+    margin-bottom: 10px;
+    font-size: 0.83rem;
+    font-weight: 650;
+  }
+
+  .aila-deal__variant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .aila-deal__variant {
+    min-height: 46px;
+    padding: 10px 15px;
+    border: 1px solid color-mix(in srgb, var(--aila-deal-text) 28%, transparent);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--aila-deal-text);
+    font: inherit;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .aila-deal__variant:hover {
+    border-color: var(--aila-deal-text);
+  }
+
+  .aila-deal__variant.is-selected {
+    border-color: var(--aila-deal-text);
+    background: color-mix(in srgb, var(--aila-deal-accent) 16%, transparent);
+    box-shadow: 0 0 0 2px var(--aila-deal-accent);
+  }
+
+  .aila-deal__actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  .aila-deal__add-button {
+    width: 100%;
+    min-height: 54px;
+    border: 1px solid var(--aila-deal-text);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--aila-deal-text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .aila-deal__add-button:hover:not(:disabled) {
+    background: var(--aila-deal-text);
+    color: var(--aila-deal-card-bg);
+  }
+
+  .aila-deal__add-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .aila-deal__buy-now {
+    min-height: 54px;
+  }
+
+  .aila-deal__buy-now .shopify-payment-button,
+  .aila-deal__buy-now .shopify-payment-button__button {
+    width: 100%;
+  }
+
+  .aila-deal__buy-now .shopify-payment-button__button--unbranded {
+    min-height: 54px;
+    border-radius: 999px;
+    background: var(--aila-deal-text);
+    color: var(--aila-deal-card-bg);
+    font: inherit;
+  }
+
+  .aila-deal__editor-note {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border: 1px dashed color-mix(in srgb, var(--aila-deal-text) 32%, transparent);
+    border-radius: 10px;
+    color: var(--aila-deal-muted);
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+
+  .aila-deal.is-unscheduled .aila-deal__editor-note--unscheduled,
+  .aila-deal.is-expired .aila-deal__editor-note--expired {
+    display: block;
+  }
+
+  .aila-deal:not(.is-active) .deal-only,
+  .aila-deal.is-active .standard-only {
+    display: none;
+  }
+
+  .aila-deal-empty {
+    width: min(1100px, calc(100% - 40px));
+    margin-inline: auto;
+    padding: clamp(40px, 7vw, 90px);
+    border: 1px dashed color-mix(in srgb, var(--aila-deal-text) 30%, transparent);
+    border-radius: var(--aila-deal-radius);
+    background: var(--aila-deal-card-bg);
+    text-align: center;
+  }
+
+  .aila-deal-empty__eyebrow {
+    margin: 0 0 10px;
+    color: var(--aila-deal-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .aila-deal-empty h2 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(2rem, 5vw, 4rem);
+  }
+
+  .aila-deal-empty p:last-child {
+    max-width: 58ch;
+    margin: 16px auto 0;
+    color: var(--aila-deal-muted);
+  }
+
+  @media screen and (max-width: 989px) {
+    .aila-deal {
+      width: min(760px, calc(100% - 28px));
+    }
+
+    .aila-deal__card {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .aila-deal__media {
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+    }
+
+    .aila-deal__content {
+      padding: clamp(30px, 7vw, 54px);
+    }
+
+    .aila-deal__title {
+      max-width: 18ch;
+    }
+  }
+
+  @media screen and (max-width: 549px) {
+    .aila-deal__media {
+      aspect-ratio: 1 / 1;
+    }
+
+    .aila-deal__media-badge {
+      inset: 14px auto auto 14px;
+    }
+
+    .aila-deal__content {
+      padding: 28px 20px 30px;
+    }
+
+    .aila-deal__topline {
+      margin-bottom: 18px;
+    }
+
+    .aila-deal__title {
+      font-size: clamp(2.15rem, 12vw, 3.15rem);
+    }
+
+    .aila-deal__countdown-unit {
+      padding-inline: 3px;
+    }
+
+    .aila-deal__countdown-unit span {
+      font-size: 0.56rem;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aila-deal__media-element,
+    .aila-deal__variant,
+    .aila-deal__add-button {
+      transition: none;
+    }
+
+    .aila-deal__media:hover .aila-deal__media-element {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Limited-time deal",
+  "tag": "section",
+  "class": "aila-limited-deal-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product and offer"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Highlighted product"
+    },
+    {
+      "type": "range",
+      "id": "discount_percent",
+      "label": "Displayed discount",
+      "min": 1,
+      "max": 80,
+      "step": 1,
+      "unit": "%",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End date (YYYY-MM-DD)",
+      "info": "The deadline uses Ottawa/Eastern time."
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "End time (24-hour HH:MM)",
+      "default": "23:59"
+    },
+    {
+      "type": "select",
+      "id": "expiry_behavior",
+      "label": "After the timer ends",
+      "options": [
+        {
+          "value": "spotlight",
+          "label": "Revert to regular spotlight"
+        },
+        {
+          "value": "hide",
+          "label": "Hide the section"
+        }
+      ],
+      "default": "spotlight"
+    },
+    {
+      "type": "paragraph",
+      "content": "Important: create a matching automatic product discount under Shopify Admin → Discounts, using the same product, percentage, start time, and end time. This section controls presentation only."
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Promotional video",
+      "info": "Takes priority over the image and product media."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Promotional image",
+      "info": "Falls back to the product's featured image."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Deal badge",
+      "default": "Limited-time offer"
+    },
+    {
+      "type": "text",
+      "id": "expired_badge_text",
+      "label": "Regular spotlight badge",
+      "default": "Aila featured"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "A fragrance worth lingering over"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Custom description",
+      "info": "Leave blank to use a shortened version of the product description."
+    },
+    {
+      "type": "text",
+      "id": "countdown_label",
+      "label": "Countdown label",
+      "default": "Offer ends"
+    },
+    {
+      "type": "text",
+      "id": "expired_text",
+      "label": "Text after expiry",
+      "default": "The limited-time offer has ended, but this fragrance is still available at its regular price."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_inventory",
+      "label": "Show availability",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_inventory_quantity",
+      "label": "Show exact inventory quantity",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "in_stock_label",
+      "label": "In-stock label",
+      "default": "In stock"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_label",
+      "label": "Sold-out label",
+      "default": "Sold out"
+    },
+    {
+      "type": "text",
+      "id": "variant_label",
+      "label": "Variant heading",
+      "default": "Choose an option"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "Add-to-cart label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_now",
+      "label": "Show Buy it now",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "Section background",
+      "default": "#171414"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#fffdf9"
+    },
+    {
+      "type": "color",
+      "id": "media_background",
+      "label": "Media background",
+      "default": "#f2dfda"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#2a2422"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text",
+      "default": "#776b67"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#f4e88f"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text",
+      "default": "#24201f"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Limited-time deal",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}
