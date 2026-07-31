@@ -176,7 +176,11 @@ class HeaderComponent extends Component {
     if (!this.#offscreen && stickyMode !== 'always') return;
 
     const scrollTop = getScrollTop();
-    const headerTop = this.getBoundingClientRect().top;
+    // The floating header itself has a deliberate positive visual offset.
+    // Measure the sticky section wrapper instead, whose -1px top position is
+    // Horizon's sentinel for distinguishing sticky from its natural position.
+    const stickyAnchor = this.closest('.header-section') ?? this;
+    const headerTop = stickyAnchor.getBoundingClientRect().top;
     const isScrollingUp = scrollTop < this.#lastScrollTop;
     const isAtTop = headerTop >= 0;
 

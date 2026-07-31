@@ -74,6 +74,10 @@ button.shopify-payment-button__button--unbranded {
   padding: 0;
 }
 
+body:has(#header-component[transparent]) #MainContent > .shopify-section:first-child {
+  margin-top: calc((var(--header-group-height) * -1) - 1px);
+}
+
 .announcement-bar {
   min-height: 31px;
   font-size: 0.68rem;
@@ -206,14 +210,6 @@ button.shopify-payment-button__button--unbranded {
     background: var(--seoul-paper);
   }
 
-  #header-component .header__column--right .account-button shopify-account {
-    --shopify-account-avatar-size: 40px;
-    --shopify-account-signed-in-avatar-size: 40px;
-
-    width: 100%;
-    height: 100%;
-  }
-
   #header-component .header__column--right .header-actions__action:is(:hover, :focus-visible) {
     background: rgb(245 217 221 / 55%);
     transform: translateY(-1px);
@@ -230,6 +226,10 @@ button.shopify-payment-button__button--unbranded {
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
+}
+
+#header-component[data-menu-style='drawer'] .header__columns:has(.account-button) .search-action {
+  grid-area: leftB;
 }
 
 #header-component[transparent] .header__row--top {
