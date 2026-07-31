@@ -66,11 +66,49 @@ button.shopify-payment-button__button--unbranded {
   z-index: var(--layer-header);
 }
 
+.header-section {
+  padding: 12px clamp(12px, 2vw, 28px) 0;
+}
+
+.header-section:has(> #header-component[transparent]) {
+  padding: 0;
+}
+
 .announcement-bar {
   min-height: 31px;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+#header-component {
+  width: min(1440px, 100%);
+  margin-inline: auto;
+  overflow: visible;
+  border-radius: 999px;
+}
+
+#header-component[transparent] {
+  top: 12px;
+  right: auto;
+  left: 50%;
+  width: min(1440px, calc(100vw - clamp(24px, 4vw, 56px)));
+  transform: translateX(-50%);
+}
+
+#header-component .header__underlay-closed {
+  height: 100%;
+  border: 1px solid rgb(36 32 31 / 9%);
+  border-radius: 999px;
+  background: rgb(255 253 249 / 90%);
+  box-shadow:
+    0 16px 50px rgb(40 30 27 / 12%),
+    0 2px 10px rgb(40 30 27 / 5%);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+#header-component .header__underlay-open {
+  display: none;
 }
 
 #header-component .header__row {
@@ -79,18 +117,142 @@ button.shopify-payment-button__button--unbranded {
     box-shadow 180ms ease;
 }
 
-#header-component[sticky]:not([transparent]) .header__row--top {
-  background: rgb(255 253 249 / 94%);
-  backdrop-filter: blur(16px);
+#header-component .header__row--top {
+  min-height: 62px;
+  border: 0 !important;
+  border-radius: 999px;
+  background: transparent !important;
 }
 
-#header-component[sticky][data-scroll-direction='up'] .header__row--top {
-  box-shadow: 0 8px 30px rgb(45 36 34 / 6%);
+/*
+ * The floating pill uses the full available row on desktop. These rules are
+ * deliberately independent of Horizon's transient data-menu-style value so
+ * the first painted frame cannot inherit the mobile five-column grid while
+ * Shopify's preview iframe is still being measured.
+ */
+@media screen and (min-width: 990px) and (hover: hover) and (pointer: fine) {
+  #header-component .header__row--top .header__columns {
+    width: 100%;
+    min-width: 0;
+    grid-template-areas: 'left center right' !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    column-gap: clamp(24px, 3vw, 52px) !important;
+    align-items: center;
+  }
+
+  #header-component .header__column {
+    display: flex !important;
+    min-width: 0;
+  }
+
+  #header-component .header__column--left {
+    justify-self: start;
+    justify-content: flex-start;
+  }
+
+  #header-component .header__column--center {
+    justify-self: center;
+    justify-content: center;
+  }
+
+  #header-component .header__column--right {
+    justify-self: end;
+    justify-content: flex-end;
+    gap: 2px !important;
+  }
+
+  #header-component .header__drawer,
+  #header-component .search-action--hidden-on-menu {
+    display: none !important;
+  }
+
+  #header-component :is(.header-menu, .dropdown-localization),
+  #header-component .search-action--hidden-on-drawer {
+    display: flex !important;
+  }
+
+  /*
+   * Horizon normally uses negative margins and a shared sibling-dimming hover
+   * effect for the search/account/cart cluster. Inside the floating pill that
+   * makes the three controls overlap visually and react as one large target.
+   * Give every action its own stable hitbox instead.
+   */
+  #header-component .header__column--right :is(.search-action, header-actions) {
+    margin-inline: 0 !important;
+  }
+
+  #header-component .header__column--right header-actions {
+    gap: 2px;
+  }
+
+  #header-component .header__column--right .header-actions__action {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    flex: 0 0 40px;
+    align-items: center;
+    border-radius: 999px;
+    background: transparent;
+    opacity: 1 !important;
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      transform 160ms ease,
+      opacity 160ms ease;
+  }
+
+  #header-component .header__column--right .account-button .aila-account-button__visual {
+    background: var(--seoul-paper);
+  }
+
+  #header-component .header__column--right .account-button shopify-account {
+    --shopify-account-avatar-size: 40px;
+    --shopify-account-signed-in-avatar-size: 40px;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  #header-component .header__column--right .header-actions__action:is(:hover, :focus-visible) {
+    background: rgb(245 217 221 / 55%);
+    transform: translateY(-1px);
+  }
+
+  #header-component
+    .header__column--right
+    .account-button:is(:hover, :focus-within)
+    .aila-account-button__visual {
+    background: rgb(245 217 221 / 55%);
+  }
+
+  #header-component .header__column--right .header-actions__action:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+#header-component[transparent] .header__row--top {
+  --color-foreground: var(--seoul-ink) !important;
+  --color-foreground-rgb: 36 32 31 !important;
+  --color-border: var(--seoul-ink) !important;
+  --color-border-rgb: 36 32 31 !important;
+  --color-primary-button-background: var(--seoul-ink) !important;
+  --color-primary-button-text: var(--seoul-paper) !important;
+  --cart-bubble-background: var(--seoul-ink) !important;
+  --cart-bubble-text: var(--seoul-paper) !important;
+}
+
+#header-component[sticky][data-sticky-state='active'] .header__underlay-closed {
+  background: rgb(255 253 249 / 96%);
+  box-shadow:
+    0 18px 54px rgb(40 30 27 / 15%),
+    0 2px 10px rgb(40 30 27 / 6%);
 }
 
 #header-component .header-logo {
   min-width: max-content;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 750;
   letter-spacing: -0.04em;
 }
@@ -110,8 +272,11 @@ button.shopify-payment-button__button--unbranded {
 }
 
 #header-component .menu-list__link {
-  font-size: 0.72rem;
-  letter-spacing: 0.015em;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.42rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
 }
 
 #header-component .menu-list__link-title {
@@ -137,52 +302,139 @@ button.shopify-payment-button__button--unbranded {
   transform-origin: left;
 }
 
-/* Horizon mega-menu, visually tuned to the Seoul reference. */
-
-#header-component .menu-list__submenu {
-  border-top: 1px solid rgb(36 32 31 / 8%);
+#header-component .aila-menu-caret {
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 180ms ease;
 }
 
-#header-component .menu-list__submenu-inner {
-  background: var(--seoul-paper);
-  box-shadow: 0 24px 60px rgb(48 35 31 / 10%);
+#header-component .menu-list__link[aria-expanded='true'] .aila-menu-caret {
+  margin-top: 3px;
+  transform: rotate(225deg);
 }
 
-#header-component .mega-menu__grid {
-  gap: 1.75rem;
+/* Compact floating dropdowns keep native Horizon menu behaviour. */
+
+@media screen and (min-width: 750px) {
+  #header-component .menu-list__list-item:not([slot]) {
+    position: relative;
+  }
+
+  #header-component .menu-list__list-item:not([slot]) > .menu-list__submenu {
+    top: calc(100% + 12px) !important;
+    left: 50% !important;
+    width: max-content !important;
+    min-width: 230px;
+    max-width: min(620px, calc(100vw - 32px));
+    padding: 0 !important;
+    border: 0;
+    transform: translateX(-50%);
+    clip-path: none !important;
+  }
+
+  #header-component .menu-list__submenu-inner {
+    display: block;
+    min-width: 230px;
+    max-height: min(70vh, 620px);
+    padding: 0.72rem !important;
+    overflow: auto;
+    border: 1px solid rgb(36 32 31 / 9%);
+    border-radius: 20px;
+    background: rgb(255 253 249 / 98%);
+    box-shadow: 0 22px 60px rgb(48 35 31 / 16%);
+    opacity: var(--submenu-content-opacity);
+    transform: none !important;
+    backdrop-filter: blur(18px);
+  }
+
+  #header-component .mega-menu,
+  #header-component .mega-menu__grid {
+    display: block;
+    width: auto;
+  }
+
+  #header-component .mega-menu__list {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+
+  #header-component .mega-menu__column {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+
+  #header-component .mega-menu__link,
+  #header-component .aila-catalog-fallback__link {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 0.72rem 0.82rem;
+    border-radius: 13px;
+    color: var(--seoul-ink);
+    font-size: 0.78rem;
+    line-height: 1.25;
+    text-decoration: none;
+    opacity: 0.78;
+    transition:
+      opacity 160ms ease,
+      background-color 160ms ease,
+      transform 160ms ease;
+  }
+
+  #header-component .mega-menu__link:hover,
+  #header-component .aila-catalog-fallback__link:hover {
+    background: rgb(245 217 221 / 52%);
+    opacity: 1;
+    transform: translateX(2px);
+  }
+
+  #header-component .mega-menu__link--parent {
+    margin: 0.2rem 0 0.28rem;
+    font-size: 0.7rem;
+    font-weight: 750;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+    opacity: 1;
+  }
+
+  #header-component .aila-catalog-fallback {
+    display: grid;
+    min-width: 210px;
+    gap: 0.18rem;
+  }
 }
 
-#header-component .mega-menu__link {
-  font-size: 0.76rem;
-  line-height: 1.45;
-  opacity: 0.72;
-  transition:
-    opacity 160ms ease,
-    transform 160ms ease;
-}
+@media screen and (max-width: 749px) {
+  .header-section {
+    padding: 8px 10px 0;
+  }
 
-#header-component .mega-menu__link:hover {
-  opacity: 1;
-  transform: translateX(2px);
-}
+  .header-section:has(> #header-component[transparent]) {
+    padding: 0;
+  }
 
-#header-component .mega-menu__link--parent {
-  margin-bottom: 0.4rem;
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.075em;
-  text-transform: uppercase;
-  opacity: 1;
-}
+  #header-component[transparent] {
+    top: 8px;
+    width: calc(100vw - 20px);
+  }
 
-#header-component .mega-menu__link-image,
-#header-component .mega-menu__content .resource-card__image {
-  border-radius: var(--seoul-radius-md);
-  box-shadow: var(--seoul-shadow);
-}
+  #header-component .header__row--top {
+    min-height: 54px;
+  }
 
-#header-component .mega-menu__content-list {
-  gap: 1rem;
+  #header-component .header__underlay-closed {
+    box-shadow:
+      0 12px 36px rgb(40 30 27 / 12%),
+      0 2px 8px rgb(40 30 27 / 5%);
+  }
 }
 
 /* Product cards and badges */

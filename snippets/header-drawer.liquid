@@ -109,6 +109,16 @@
             {% assign animation_index = 0 %}
             {%- for link in linklist.links -%}
               {% assign animation_index = animation_index | plus: 1 %}
+              {% liquid
+                assign normalized_link_title = link.title | strip | downcase
+                assign use_catalog_fallback = false
+
+                if block_settings.enable_catalog_fallback and link.links == blank
+                  if link.handle == 'catalog' or normalized_link_title == 'catalog'
+                    assign use_catalog_fallback = true
+                  endif
+                endif
+              %}
               <li
                 style="--menu-drawer-animation-index: {{ animation_index }};"
                 class="{%- if block_settings.drawer_accordion -%}menu-drawer__list-item--deep{%- else -%}menu-drawer__list-item--flat{%- endif -%}{% if block_settings.drawer_dividers %} menu-drawer__list-item--divider{% endif %}"
@@ -183,6 +193,50 @@
                   {% render 'accordion-custom-component',
                     children: accordion_children,
                     open_by_default_on_mobile: should_open_first
+                  %}
+                {% elsif use_catalog_fallback %}
+                  {% capture accordion_children %}
+                    <details id="Details-menu-drawer-{{ link.handle }}">
+                      <summary
+                        id="HeaderDrawer-{{ link.handle }}"
+                        class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
+                      >
+                        <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                        <span class="svg-wrapper icon-plus">
+                          {{- 'icon-plus.svg' | inline_asset_content -}}
+                        </span>
+                      </summary>
+                      <ul
+                        class="menu-drawer__menu menu-drawer__menu--childlist menu-drawer__animated-element details-content"
+                        role="list"
+                        tabindex="-1"
+                      >
+                        <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: 1;">
+                          <a
+                            href="{{ block_settings.catalog_perfumes_link | default: routes.all_products_collection_url | escape }}"
+                            class="menu-drawer__menu-item menu-drawer__menu-item--child focus-inset"
+                          >
+                            <span class="menu-drawer__menu-item-text wrap-text">
+                              {{- block_settings.catalog_perfumes_label | default: 'Perfumes' | escape -}}
+                            </span>
+                          </a>
+                        </li>
+                        <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: 2;">
+                          <a
+                            href="{{ block_settings.catalog_handbags_link | default: '/collections/handbags' | escape }}"
+                            class="menu-drawer__menu-item menu-drawer__menu-item--child focus-inset"
+                          >
+                            <span class="menu-drawer__menu-item-text wrap-text">
+                              {{- block_settings.catalog_handbags_label | default: 'Handbags' | escape -}}
+                            </span>
+                          </a>
+                        </li>
+                      </ul>
+                    </details>
+                  {% endcapture %}
+                  {% render 'accordion-custom-component',
+                    children: accordion_children,
+                    open_by_default_on_mobile: false
                   %}
                 {% elsif block_settings.drawer_accordion == false and link.links != blank %}
                   {%- comment -%}

@@ -110,6 +110,14 @@
           </span>
         {% endif %}
       </shopify-account>
+      {% if display_style == 'icon' %}
+        <span
+          class="aila-account-button__visual"
+          aria-hidden="true"
+        >
+          {{ 'icon-account.svg' | inline_asset_content }}
+        </span>
+      {% endif %}
     </div>
   {% endif %}
 
@@ -165,6 +173,34 @@
   .account-button {
     /* Remove the background color from the color scheme, we want to inherit the color of the header */
     background: transparent;
+    position: relative;
+  }
+
+  /*
+   * Shopify owns the signed-in avatar rendered inside <shopify-account>.
+   * Keep the header's account control visually consistent for signed-in,
+   * signed-out, Shop-recognized, and editor-preview states while leaving the
+   * native account sheet and its click target intact underneath.
+   */
+  .aila-account-button__visual {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    background-color: var(--color-background, #fffdf9);
+    color: var(--color-account-icon);
+    pointer-events: none;
+    transition:
+      color var(--header-content-transition-timing),
+      background-color var(--animation-speed) var(--animation-easing);
+  }
+
+  .aila-account-button__visual svg {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
   }
 
   .account-button__icon,

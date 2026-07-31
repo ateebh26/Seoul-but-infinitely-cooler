@@ -93,9 +93,24 @@
 
     {% capture children %}
       {% for link in block_settings.menu.links %}
+        {% liquid
+          assign normalized_link_title = link.title | strip | downcase
+          assign use_catalog_fallback = false
+
+          if block_settings.enable_catalog_fallback and link.links == blank
+            if link.handle == 'catalog' or normalized_link_title == 'catalog'
+              assign use_catalog_fallback = true
+            endif
+          endif
+
+          assign link_has_children = false
+          if link.links != blank or use_catalog_fallback
+            assign link_has_children = true
+          endif
+        %}
         <li
           role="presentation"
-          class="menu-list__list-item"
+          class="menu-list__list-item{% if use_catalog_fallback %} menu-list__list-item--catalog-fallback{% endif %}"
           on:focus="/activate"
           on:blur="/deactivate"
           on:pointerenter="/activate"
@@ -105,7 +120,7 @@
             href="{{ link.url }}"
             data-skip-node-update="true"
             class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
-            {%- if link.links != blank -%}
+            {%- if link_has_children -%}
               aria-controls="submenu-{{ forloop.index }}"
               aria-haspopup="true"
               aria-expanded="false"
@@ -116,33 +131,47 @@
             ref="menuitem"
           >
             <span class="menu-list__link-title">{{- link.title -}}</span>
+            {% if link_has_children %}
+              <span class="aila-menu-caret" aria-hidden="true"></span>
+            {% endif %}
           </a>
-          {%- if link.links != blank -%}
+          {%- if link_has_children -%}
             <div class="menu-list__submenu{{ background_color_classes }}" ref="submenu[]">
               <div
                 id="submenu-{{ forloop.index }}"
                 class="menu-list__submenu-inner"
                 style="{% render 'submenu-font-styles', settings: block_settings %}"
               >
-                {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
-                <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
-                  <div
-                    class="mega-menu__grid"
-                    data-menu-grid-id="{{ list_id }}"
-                  >
-                    {% render 'mega-menu-list',
-                      parent_link: link,
-                      id: list_id,
-                      section: section,
-                      grid_columns_count: 6,
-                      grid_columns_count_tablet: 4,
-                      grid_columns_count_collection_images: 8,
-                      menu_content_type: menu_content_type,
-                      content_aspect_ratio: ratio,
-                      image_border_radius: image_border_radius
-                    %}
+                {% if use_catalog_fallback %}
+                  <nav class="aila-catalog-fallback" aria-label="{{ link.title | escape }}">
+                    <a class="aila-catalog-fallback__link" href="{{ block_settings.catalog_perfumes_link | default: routes.all_products_collection_url | escape }}">
+                      {{- block_settings.catalog_perfumes_label | default: 'Perfumes' | escape -}}
+                    </a>
+                    <a class="aila-catalog-fallback__link" href="{{ block_settings.catalog_handbags_link | default: '/collections/handbags' | escape }}">
+                      {{- block_settings.catalog_handbags_label | default: 'Handbags' | escape -}}
+                    </a>
+                  </nav>
+                {% else %}
+                  {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
+                  <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
+                    <div
+                      class="mega-menu__grid"
+                      data-menu-grid-id="{{ list_id }}"
+                    >
+                      {% render 'mega-menu-list',
+                        parent_link: link,
+                        id: list_id,
+                        section: section,
+                        grid_columns_count: 6,
+                        grid_columns_count_tablet: 4,
+                        grid_columns_count_collection_images: 8,
+                        menu_content_type: menu_content_type,
+                        content_aspect_ratio: ratio,
+                        image_border_radius: image_border_radius
+                      %}
+                    </div>
                   </div>
-                </div>
+                {% endif %}
               </div>
             </div>
           {%- endif -%}
@@ -718,6 +747,47 @@
       "id": "menu",
       "label": "t:settings.menu",
       "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Catalog fallback"
+    },
+    {
+      "type": "paragraph",
+      "content": "When the selected menu has a Catalog item without children, these two links create its dropdown automatically. Adding nested links to Catalog under Content > Menus replaces this fallback."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_catalog_fallback",
+      "label": "Create dropdown for an empty Catalog item",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "catalog_perfumes_label",
+      "label": "Perfume link label",
+      "default": "Perfumes",
+      "visible_if": "{{ block.settings.enable_catalog_fallback }}"
+    },
+    {
+      "type": "url",
+      "id": "catalog_perfumes_link",
+      "label": "Perfume link",
+      "default": "/collections/all",
+      "visible_if": "{{ block.settings.enable_catalog_fallback }}"
+    },
+    {
+      "type": "text",
+      "id": "catalog_handbags_label",
+      "label": "Handbag link label",
+      "default": "Handbags",
+      "visible_if": "{{ block.settings.enable_catalog_fallback }}"
+    },
+    {
+      "type": "url",
+      "id": "catalog_handbags_link",
+      "label": "Handbag link",
+      "visible_if": "{{ block.settings.enable_catalog_fallback }}"
     },
     {
       "type": "header",
