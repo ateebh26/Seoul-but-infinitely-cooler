@@ -31,11 +31,97 @@
 
 {% render 'collection-wrapper-styles' %}
 
+{% liquid
+  assign gender_all_collection = section.settings.gender_all_collection
+  assign gender_men_collection = section.settings.gender_men_collection
+  assign gender_women_collection = section.settings.gender_women_collection
+
+  if gender_all_collection == blank
+    assign gender_all_collection = collections['all']
+  endif
+
+  if gender_men_collection == blank
+    assign gender_men_collection = collections['men']
+  endif
+
+  if gender_women_collection == blank
+    assign gender_women_collection = collections['women']
+  endif
+
+  assign show_gender_switcher = false
+  assign gender_all_is_active = false
+  assign gender_men_is_active = false
+  assign gender_women_is_active = false
+
+  if section.settings.enable_gender_switcher
+    if gender_all_collection != blank or gender_men_collection != blank or gender_women_collection != blank
+      assign show_gender_switcher = true
+    endif
+  endif
+
+  if collection.id == gender_all_collection.id or collection.handle == gender_all_collection.handle
+    assign gender_all_is_active = true
+  elsif collection.id == gender_men_collection.id or collection.handle == gender_men_collection.handle
+    assign gender_men_is_active = true
+  elsif collection.id == gender_women_collection.id or collection.handle == gender_women_collection.handle
+    assign gender_women_is_active = true
+  endif
+%}
+
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
 {% # theme-check-disable-next-line UnknownFilter %}
 <collection-component view-event-payload="{{ collection | standard_event_data: 'view' | escape }}">
+  {% if show_gender_switcher %}
+    <div class="collection-gender-switcher-shell{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}">
+      <nav
+        class="collection-gender-switcher"
+        aria-label="{{ section.settings.gender_switcher_accessible_label | escape }}"
+        data-current-collection="{{ collection.handle | escape }}"
+      >
+        {% if gender_all_collection != blank %}
+          <a
+            class="collection-gender-switcher__link{% if gender_all_is_active %} collection-gender-switcher__link--active{% endif %}"
+            href="{{ gender_all_collection.url }}"
+            data-collection="{{ gender_all_collection.handle | escape }}"
+            {% if gender_all_is_active %}
+              aria-current="page"
+            {% endif %}
+          >
+            {{- section.settings.gender_all_label | escape -}}
+          </a>
+        {% endif %}
+
+        {% if gender_men_collection != blank %}
+          <a
+            class="collection-gender-switcher__link{% if gender_men_is_active %} collection-gender-switcher__link--active{% endif %}"
+            href="{{ gender_men_collection.url }}"
+            data-collection="{{ gender_men_collection.handle | escape }}"
+            {% if gender_men_is_active %}
+              aria-current="page"
+            {% endif %}
+          >
+            {{- section.settings.gender_men_label | escape -}}
+          </a>
+        {% endif %}
+
+        {% if gender_women_collection != blank %}
+          <a
+            class="collection-gender-switcher__link{% if gender_women_is_active %} collection-gender-switcher__link--active{% endif %}"
+            href="{{ gender_women_collection.url }}"
+            data-collection="{{ gender_women_collection.handle | escape }}"
+            {% if gender_women_is_active %}
+              aria-current="page"
+            {% endif %}
+          >
+            {{- section.settings.gender_women_label | escape -}}
+          </a>
+        {% endif %}
+      </nav>
+    </div>
+  {% endif %}
+
   <results-list
     class="section product-grid-container{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
     style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
@@ -92,6 +178,90 @@
   </results-list>
 </collection-component>
 
+{% style %}
+  #shopify-section-{{ section.id }} collection-component {
+    display: block;
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .collection-gender-switcher-shell {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--padding-md) max(var(--page-margin), var(--padding-md)) 0;
+  }
+
+  #shopify-section-{{ section.id }} .collection-gender-switcher {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    width: min(100%, 24rem);
+    margin-inline: auto;
+    padding: 4px;
+    box-sizing: border-box;
+    border: 1px solid rgba(28, 27, 26, 0.12);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 12%);
+    border-radius: 999px;
+    background: #f3efed;
+    background: rgb(var(--color-foreground-rgb) / 6%);
+  }
+
+  #shopify-section-{{ section.id }} .collection-gender-switcher__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 16px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 999px;
+    color: #504b48;
+    color: rgb(var(--color-foreground-rgb) / 70%);
+    font-size: var(--font-paragraph--size);
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color var(--animation-speed) ease,
+      background-color var(--animation-speed) ease,
+      box-shadow var(--animation-speed) ease;
+  }
+
+  #shopify-section-{{ section.id }} .collection-gender-switcher__link:hover {
+    color: #1c1b1a;
+    color: var(--color-foreground);
+    background: rgba(255, 255, 255, 0.7);
+    background: rgb(var(--color-background-rgb) / 65%);
+  }
+
+  #shopify-section-{{ section.id }} .collection-gender-switcher__link--active {
+    color: #1c1b1a;
+    color: var(--color-foreground);
+    background: #ffffff;
+    background: var(--color-background);
+    box-shadow: 0 2px 8px rgba(28, 27, 26, 0.14);
+    box-shadow: 0 2px 8px rgb(var(--color-shadow-rgb) / 14%);
+  }
+
+  #shopify-section-{{ section.id }} .collection-gender-switcher__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .collection-gender-switcher-shell {
+      padding: var(--padding-sm) var(--page-margin) 0;
+    }
+
+    #shopify-section-{{ section.id }} .collection-gender-switcher__link {
+      padding-inline: 10px;
+    }
+  }
+{% endstyle %}
+
 {% schema %}
 {
   "name": "t:names.collection_container",
@@ -99,6 +269,63 @@
     "templates": ["collection"]
   },
   "settings": [
+    {
+      "type": "header",
+      "content": "Gender collection selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gender_switcher",
+      "label": "Show gender selector",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "gender_switcher_accessible_label",
+      "label": "Accessible label",
+      "default": "Shop fragrances by gender",
+      "visible_if": "{{ section.settings.enable_gender_switcher }}"
+    },
+    {
+      "type": "collection",
+      "id": "gender_all_collection",
+      "label": "All collection"
+    },
+    {
+      "type": "text",
+      "id": "gender_all_label",
+      "label": "All label",
+      "default": "All",
+      "visible_if": "{{ section.settings.enable_gender_switcher }}"
+    },
+    {
+      "type": "collection",
+      "id": "gender_men_collection",
+      "label": "Men's collection"
+    },
+    {
+      "type": "text",
+      "id": "gender_men_label",
+      "label": "Men's label",
+      "default": "Men",
+      "visible_if": "{{ section.settings.enable_gender_switcher }}"
+    },
+    {
+      "type": "collection",
+      "id": "gender_women_collection",
+      "label": "Women's collection"
+    },
+    {
+      "type": "text",
+      "id": "gender_women_label",
+      "label": "Women's label",
+      "default": "Women",
+      "visible_if": "{{ section.settings.enable_gender_switcher }}"
+    },
+    {
+      "type": "header",
+      "content": "Product grid"
+    },
     {
       "type": "select",
       "id": "layout_type",
